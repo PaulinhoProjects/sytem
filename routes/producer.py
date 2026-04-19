@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from models import db, Produtor
 from forms import ProducerForm
-from utils import isolamento_produtor
 
 producer_bp = Blueprint('producer', __name__)
 
