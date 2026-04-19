@@ -63,7 +63,22 @@ def dashboard():
 def relatorios():
     if current_user.role not in ['AGRONOMA', 'ADM']: abort(403)
     producoes = Producao.query.all()
-    return render_template('relatorios.html', producoes=producoes, total_quantidade=sum(p.quantidade_kg for p in producoes), total_registros=len(producoes))
+    
+    # Agrupando dados para o gráfico (Produção por Lavoura)
+    agg = {}
+    for p in producoes:
+        nome = p.lavoura.nome
+        agg[nome] = agg.get(nome, 0) + p.quantidade_kg
+    
+    chart_labels = list(agg.keys())
+    chart_data = list(agg.values())
+    
+    return render_template('relatorios.html', 
+                           producoes=producoes, 
+                           total_quantidade=sum(p.quantidade_kg for p in producoes), 
+                           total_registros=len(producoes),
+                           chart_labels=chart_labels,
+                           chart_data=chart_data)
 
 if __name__ == '__main__':
     with app.app_context():

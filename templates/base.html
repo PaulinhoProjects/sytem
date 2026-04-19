@@ -7,6 +7,8 @@
     <!-- Fontes modernas do Google -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Integração Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -56,5 +58,32 @@
 
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Botão de Dark Mode Inteligente -->
+    <button id="dark-mode-toggle" class="floating-btn" title="Alternar Modo Escuro">🌙</button>
+
+    <script>
+        // Logica simples de Dark Mode em Vanilla JS
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const root = document.documentElement;
+        
+        // Verifica preferência anterior
+        if(localStorage.getItem('theme') === 'dark') {
+            root.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = '☀️';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if(root.getAttribute('data-theme') === 'dark') {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.textContent = '🌙';
+            } else {
+                root.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.textContent = '☀️';
+            }
+        });
+    </script>
 </body>
 </html>

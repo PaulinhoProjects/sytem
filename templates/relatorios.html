@@ -1,46 +1,113 @@
 {% extends "base.html" %}
-{% block title %}Relatórios de Produção{% endblock %}
+
 {% block content %}
-<div style="background: white; padding: 2rem; border-radius: 8px;">
-    <h1>Relatórios e Métricas de Produção</h1>
-    
-    <div style="display: flex; gap: 2rem; margin: 2rem 0;">
-        <div style="background: #eaf1f8; padding: 1.5rem; border-radius: 8px; flex: 1;">
-            <h3>Total de Lotes/Registros</h3>
-            <p style="font-size: 2rem; color: #2c3e50; font-weight: bold;">{{ total_registros }}</p>
+<div class="relatorios">
+    <div class="flex-between" style="margin-bottom: 2rem;">
+        <h2>Relatórios Avançados</h2>
+        <a href="javascript:window.print()" class="btn btn-secondary">🖨️ Imprimir PDF</a>
+    </div>
+
+    <!-- Indicadores -->
+    <div class="grid-2" style="margin-bottom: 2rem;">
+        <div class="card" style="border-top: 5px solid var(--secondary); text-align: center;">
+            <p style="color: var(--text-dark); font-weight: 600; text-transform: uppercase; font-size: 0.9rem;">Volume Total Processado</p>
+            <h3 style="font-size: 3rem; color: var(--primary); margin: 0.5rem 0;">{{ total_quantidade }} <span style="font-size: 1.5rem; color: #888;">kg</span></h3>
+            <p style="color: var(--success); font-weight: bold;">▲ Em crescimento contínuo</p>
         </div>
-        <div style="background: #d4edda; padding: 1.5rem; border-radius: 8px; flex: 1;">
-            <h3>Volume Total (kg)</h3>
-            <p style="font-size: 2rem; color: #27ae60; font-weight: bold;">{{ total_quantidade }}</p>
+        
+        <div class="card" style="border-top: 5px solid var(--primary); text-align: center;">
+            <p style="color: var(--text-dark); font-weight: 600; text-transform: uppercase; font-size: 0.9rem;">Total de Ciclos Reportados</p>
+            <h3 style="font-size: 3rem; color: var(--secondary); margin: 0.5rem 0;">{{ total_registros }}</h3>
+            <p style="color: #666;">Registros auditáveis computados</p>
         </div>
     </div>
-    
-    <h2>Listagem Resumida</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Lavoura</th>
-                <th>Produtor</th>
-                <th>Quantidade (kg)</th>
-                <th>Qualidade</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for producao in producoes %}
-            <tr>
-                <td>{{ producao.data_colheita }}</td>
-                <td>{{ producao.lavoura.nome }}</td>
-                <td>{{ producao.produtor.user.username }}</td>
-                <td>{{ producao.quantidade_kg }}</td>
-                <td>{{ producao.qualidade }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5">Nenhum registro encontrado para consolidação.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <!-- Gráfico Analítico Avançado -->
+    <div class="card">
+        <h3 style="color: var(--text-dark); margin-bottom: 1.5rem;">Desempenho Geral de Produção (por Lavoura)</h3>
+        <canvas id="producaoChart" width="400" height="150"></canvas>
+    </div>
+
+    <!-- Tabela Gerencial -->
+    <div class="card">
+        <h3 style="color: var(--text-dark); margin-bottom: 1.5rem;">Console Detalhado de Operações</h3>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Produtor / Lavoura</th>
+                        <th>Data Fechamento</th>
+                        <th>KG Registrados</th>
+                        <th>Qualificação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producao in producoes %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--primary);">{{ producao.produtor.name }}</strong><br>
+                            <span style="font-size: 0.85rem;">{{ producao.lavoura.nome }}</span>
+                        </td>
+                        <td>{{ producao.data_colheita.strftime('%d/%m/%Y') }}</td>
+                        <td style="color: var(--success); font-weight: 600;">{{ producao.quantidade_kg }}</td>
+                        <td>{{ producao.qualidade or 'Padrão Não Avaliado' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<script>
+    // Injeção do Grafo interativo utilizando Chart.js!
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('producaoChart').getContext('2d');
+        const labels = {{ chart_labels | safe }};
+        const data = {{ chart_data | safe }};
+        
+        // Cores vibrantes usando as variáveis de tema
+        const grad = ctx.createLinearGradient(0, 0, 0, 400);
+        grad.addColorStop(0, 'rgba(212, 163, 115, 0.8)'); // --secondary
+        grad.addColorStop(1, 'rgba(212, 163, 115, 0.2)');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Volume (kg) por Lote Produtivo',
+                    data: data,
+                    backgroundColor: grad,
+                    borderColor: '#D4A373',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    hoverBackgroundColor: '#1F3C28'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: {
+                        backgroundColor: 'rgba(31, 60, 40, 0.9)',
+                        titleFont: { size: 14, family: 'Inter' },
+                        bodyFont: { size: 14, family: 'Inter' },
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
