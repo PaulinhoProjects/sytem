@@ -3,10 +3,12 @@ from flask_login import LoginManager, login_required, current_user
 import os
 
 from models import db, Usuario, Lavoura, Producao
+from models_alertas import Alerta, PredictaoProducao, ScoreLavoura
 from routes.auth import auth_bp
 from routes.producer import producer_bp
 from routes.lavoura import lavoura_bp
 from routes.producao import producao_bp
+from routes.alertas import alertas_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sua_chave_secreta_aqui'
@@ -26,6 +28,7 @@ app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(producer_bp, url_prefix='/produtor')
 app.register_blueprint(lavoura_bp)
 app.register_blueprint(producao_bp)
+app.register_blueprint(alertas_bp, url_prefix='/alertas')
 
 @app.route('/')
 @login_required

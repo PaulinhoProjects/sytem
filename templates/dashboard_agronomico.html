@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Comando ML - Lavouras{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="flex-between">
+        <h2 style="margin: 0;">Supervisão Agronômica AI</h2>
+        <div>
+            <a href="{{ url_for('alertas.run_ml_job') }}" class="btn btn-secondary">⚡ Rodar Computação Machine Learning</a>
+            <a href="{{ url_for('alertas.gerar_pdf') }}" class="btn btn-primary" target="_blank">📄 Exportar Book PDF</a>
+        </div>
+    </div>
+
+    <!-- Lista de Alertas -->
+    <div class="card">
+        <h3>Alertas Inteligentes Ativos</h3>
+        {% if alertas %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Severidade</th>
+                        <th>Tipo</th>
+                        <th>Diagnóstico / Sugestão</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in alertas %}
+                    <tr style="border-left: 4px solid {{ '#E07A5F' if a.severidade == 'CRÍTICO' else '#D4A373' }}">
+                        <td><strong>{{ a.severidade }}</strong></td>
+                        <td>{{ a.tipo }}</td>
+                        <td>{{ a.mensagem }}</td>
+                        <td>{{ a.data_criacao.strftime('%d/%m %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: var(--success); font-weight: bold; margin-top: 1rem;">Nenhuma anomalia ativa. O sistema está 100% operante e saúdavel.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
