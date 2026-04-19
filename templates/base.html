@@ -4,72 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Gestão Agro Café{% endblock %}</title>
+    <!-- Fontes modernas do Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block head %}{% endblock %}
 </head>
 <body>
-    <div class="container">
-        <header>
+    <header class="header">
+        <div class="header-content">
             <h1>Gestão Agro Café</h1>
-            <nav class="navbar">
-                <ul>
-                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                    {% if current_user.is_authenticated %}
-                        {% if current_user.role == 'ADM' %}
-                            <li><a href="{{ url_for('producer.list_producers') }}">Listar Produtores</a></li>
-                            <li><a href="{{ url_for('producer.register_producer') }}">Cadastrar Produtor</a></li>
-                            <li><a href="{{ url_for('lavoura.list_lavouras') }}">Lavouras</a></li>
-                            <li><a href="{{ url_for('producao.listar_producao') }}">Produção</a></li>
-                            <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
-                        {% endif %}
-                        {% if current_user.role == 'AGRONOMA' %}
-                            <li><a href="#">Análises</a></li>
-                            <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
-                        {% endif %}
-                        {% if current_user.role == 'PRODUTOR' %}
-                            <li><a href="{{ url_for('lavoura.list_lavouras') }}">Minhas Lavouras</a></li>
-                            <li><a href="{{ url_for('producao.listar_producao') }}">Produção</a></li>
-                        {% endif %}
-                        <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
-                    {% else %}
-                        <li><a href="{{ url_for('auth.login') }}">Entrar</a></li>
-                        <li><a href="{{ url_for('auth.register') }}">Cadastrar</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </header>
-        <aside class="sidebar">
-            <h2>Perfil: {{ current_user.role if current_user.is_authenticated else 'Visitante' }}</h2>
-            <ul>
+            <nav class="nav">
                 {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    
                     {% if current_user.role == 'PRODUTOR' %}
-                        <li><a href="#">Relatórios de Produção</a></li>
-                        <li><a href="#">Histórico de Colheitas</a></li>
+                        <a href="{{ url_for('lavoura.list_lavouras') }}">Minhas Lavouras</a>
+                        <a href="{{ url_for('producao.listar_producao') }}">Minha Produção</a>
                     {% elif current_user.role == 'AGRONOMA' %}
-                        <li><a href="#">Consultorias</a></li>
-                        <li><a href="#">Recomendações</a></li>
+                        <a href="{{ url_for('lavoura.list_lavouras') }}">Lavouras Assistidas</a>
+                        <a href="{{ url_for('producao.listar_producao') }}">Produção Global</a>
+                        <a href="{{ url_for('relatorios') }}">Relatórios Técnicos</a>
                     {% elif current_user.role == 'ADM' %}
-                        <li><a href="#">Gerenciar Usuários</a></li>
-                        <li><a href="#">Relatórios Gerais</a></li>
+                        <a href="{{ url_for('producer.list_producers') }}">Produtores</a>
+                        <a href="{{ url_for('lavoura.list_lavouras') }}">Lavouras</a>
+                        <a href="{{ url_for('producao.listar_producao') }}">Produção</a>
+                        <a href="{{ url_for('relatorios') }}">Relatórios Gerenciais</a>
+                        <a href="{{ url_for('producer.register_producer') }}">Novos Vínculos</a>
                     {% endif %}
+                    
+                    <a href="{{ url_for('auth.logout') }}" style="background: rgba(255,255,255,0.15); margin-left: 1rem; border: 1px solid rgba(255,255,255,0.3);">Sair</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">Entrar</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-secondary" style="color: white; padding: 0.4rem 1rem;">Criar Conta</a>
                 {% endif %}
-            </ul>
-        </aside>
-        <main class="content">
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul class="errors">
-                        {% for message in messages %}
-                            <li style="color: green; background-color: #d4edda; padding: 10px; margin-bottom: 10px; border-radius: 4px; list-style-type: none;">{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            {% block content %}{% endblock %}
-        </main>
-    </div>
-    <footer>
-        <p>&copy; 2023 Gestão Agro Café. Todos os direitos reservados.</p>
-    </footer>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="flash {{ category if category in ['success', 'error'] else 'info' }}">
+                        {{ message }}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
 </body>
 </html>
