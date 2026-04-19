@@ -29,7 +29,7 @@
             {% endif %}
         </div>
         <div class="form-group">
-            {{ form.submit() }}
+            {{ form.submit(class="btn btn-primary", style="width: 100%") }}
         </div>
     </form>
     <p>Não tem conta? <a href="{{ url_for('auth.register') }}">Cadastre-se</a></p>
