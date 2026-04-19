@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Gestão Agro Café{% endblock %}
+
+{% block content %}
+    <h2>Bem-vindo ao Dashboard</h2>
+    {% if current_user.is_authenticated %}
+        <p>Olá, {{ current_user.username }}! Seu papel é {{ current_user.role }}.</p>
+        {% if current_user.role == 'PRODUTOR' %}
+            <div class="role-section produtor">
+                <h3>Área do Produtor</h3>
+                <p>Aqui você pode gerenciar suas plantações de café, visualizar relatórios de produção e acompanhar o histórico de colheitas.</p>
+                <ul>
+                    <li><a href="#">Adicionar Nova Planta</a></li>
+                    <li><a href="#">Ver Relatórios</a></li>
+                </ul>
+            </div>
+        {% elif current_user.role == 'AGRONOMA' %}
+            <div class="role-section agronoma">
+                <h3>Área da Agrônoma</h3>
+                <p>Como agrônoma, você pode fornecer consultorias, recomendações e análises para produtores.</p>
+                <ul>
+                    <li><a href="#">Nova Consultoria</a></li>
+                    <li><a href="#">Ver Análises</a></li>
+                </ul>
+            </div>
+        {% elif current_user.role == 'ADM' %}
+            <div class="role-section adm">
+                <h3>Área do Administrador</h3>
+                <p>Gerencie usuários, produtores e visualize relatórios gerais do sistema.</p>
+                <ul>
+                    <li><a href="{{ url_for('producer.list_producers') }}">Listar Produtores</a></li>
+                    <li><a href="#">Gerenciar Usuários</a></li>
+                </ul>
+            </div>
+        {% endif %}
+    {% else %}
+        <p>Por favor, faça login para acessar o dashboard.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+
+db = SQLAlchemy()
+
+class Usuario(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+    role = db.Column(db.String(50), nullable=False)
+    produtor = db.relationship('Produtor', backref='user', uselist=False, cascade='all, delete-orphan')
+
+class Produtor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    farm_name = db.Column(db.String(150), nullable=True)
+    location = db.Column(db.String(250), nullable=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)

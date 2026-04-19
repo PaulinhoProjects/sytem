@@ -1,0 +1,21 @@
+# Ambientes Virtuais
+venv/
+env/
+.env
+
+# Arquivos compilados do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Banco de dados local SQLite
+*.db
+*.sqlite3
+agro_cafe.db
+instance/
+
+# Flask e Ferramentas
+.flaskenv
+.pytest_cache/
+.coverage
+htmlcov/

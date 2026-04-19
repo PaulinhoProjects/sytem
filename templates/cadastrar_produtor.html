@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Produtor</title>
+</head>
+<body>
+    <h1>Cadastrar Produtor</h1>
+    <form method="POST">
+        <label for="nome">Nome do Produtor:</label>
+        <input type="text" id="nome" name="nome" required><br>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <a href="{{ url_for('dashboard') }}">Voltar ao Dashboard</a>
+</body>
+</html>

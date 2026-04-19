@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Produtores</title>
+</head>
+<body>
+    <h1>Lista de Produtores</h1>
+    <ul>
+        {% for produtor in produtores %}
+        <li>{{ produtor.nome }} (ID: {{ produtor.id }})</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('dashboard') }}">Voltar ao Dashboard</a>
+</body>
+</html>

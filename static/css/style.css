@@ -1,0 +1,147 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #2c3e50;
+    color: #fff;
+    padding: 1rem;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+}
+
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    display: block;
+}
+
+.navbar a:hover {
+    background-color: #34495e;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #ecf0f1;
+    padding: 1rem;
+    margin-top: 80px;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar a {
+    color: #333;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    display: block;
+}
+
+.sidebar a:hover {
+    background-color: #bdc3c7;
+}
+
+.content {
+    flex: 1;
+    padding: 2rem;
+    margin-top: 80px;
+    background-color: #fff;
+}
+
+footer {
+    background-color: #2c3e50;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.errors {
+    color: red;
+    list-style: none;
+}
+
+.role-section {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.produtor {
+    background-color: #d4edda;
+}
+
+.agronoma {
+    background-color: #d1ecf1;
+}
+
+.adm {
+    background-color: #f8d7da;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+table th {
+    background-color: #f2f2f2;
+}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Listar Produtores - Gestão Agro Café{% endblock %}
+
+{% block content %}
+    <h2>Listagem de Produtores</h2>
+    {% if producers %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Nome da Fazenda</th>
+                    <th>Localização</th>
+                    <th>Usuário Vinculado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producer in producers %}
+                    <tr>
+                        <td>{{ producer.name }}</td>
+                        <td>{{ producer.farm_name }}</td>
+                        <td>{{ producer.location }}</td>
+                        <td>{{ producer.user.username if producer.user else 'N/A' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum produtor cadastrado.</p>
+    {% endif %}
+{% endblock %}

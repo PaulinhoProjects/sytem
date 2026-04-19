@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestão Agro Café{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gestão Agro Café</h1>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.role == 'ADM' %}
+                            <li><a href="{{ url_for('producer.list_producers') }}">Listar Produtores</a></li>
+                            <li><a href="{{ url_for('producer.register_producer') }}">Cadastrar Produtor</a></li>
+                        {% endif %}
+                        {% if current_user.role in ['AGRONOMA', 'ADM'] %}
+                            <li><a href="#">Análises</a></li>
+                        {% endif %}
+                        {% if current_user.role == 'PRODUTOR' %}
+                            <li><a href="#">Minhas Plantas</a></li>
+                        {% endif %}
+                        <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('auth.login') }}">Entrar</a></li>
+                        <li><a href="{{ url_for('auth.register') }}">Cadastrar</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </header>
+        <aside class="sidebar">
+            <h2>Perfil: {{ current_user.role if current_user.is_authenticated else 'Visitante' }}</h2>
+            <ul>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'PRODUTOR' %}
+                        <li><a href="#">Relatórios de Produção</a></li>
+                        <li><a href="#">Histórico de Colheitas</a></li>
+                    {% elif current_user.role == 'AGRONOMA' %}
+                        <li><a href="#">Consultorias</a></li>
+                        <li><a href="#">Recomendações</a></li>
+                    {% elif current_user.role == 'ADM' %}
+                        <li><a href="#">Gerenciar Usuários</a></li>
+                        <li><a href="#">Relatórios Gerais</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </aside>
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <footer>
+        <p>&copy; 2023 Gestão Agro Café. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>
