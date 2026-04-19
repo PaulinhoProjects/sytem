@@ -18,12 +18,13 @@
                         {% if current_user.role == 'ADM' %}
                             <li><a href="{{ url_for('producer.list_producers') }}">Listar Produtores</a></li>
                             <li><a href="{{ url_for('producer.register_producer') }}">Cadastrar Produtor</a></li>
+                            <li><a href="{{ url_for('list_lavouras') }}">Lavouras</a></li>
                         {% endif %}
                         {% if current_user.role in ['AGRONOMA', 'ADM'] %}
                             <li><a href="#">Análises</a></li>
                         {% endif %}
                         {% if current_user.role == 'PRODUTOR' %}
-                            <li><a href="#">Minhas Plantas</a></li>
+                            <li><a href="{{ url_for('list_lavouras') }}">Minhas Lavouras</a></li>
                         {% endif %}
                         <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
                     {% else %}
@@ -51,6 +52,15 @@
             </ul>
         </aside>
         <main class="content">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="errors">
+                        {% for message in messages %}
+                            <li style="color: green;">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
             {% block content %}{% endblock %}
         </main>
     </div>
