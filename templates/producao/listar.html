@@ -3,7 +3,7 @@
 {% block content %}
 <div style="background: white; padding: 2rem; border-radius: 8px;">
     <h1>Registros de Produção</h1>
-    <a href="{{ url_for('nova_producao') }}" style="display:inline-block; margin-bottom:1rem; padding: 0.5rem 1rem; background: #2c3e50; color: white; text-decoration: none; border-radius: 4px;">Nova Produção</a>
+    <a href="{{ url_for('producao.nova_producao') }}" style="display:inline-block; margin-bottom:1rem; padding: 0.5rem 1rem; background: #2c3e50; color: white; text-decoration: none; border-radius: 4px;">Nova Produção</a>
     <table>
         <thead>
             <tr>
@@ -22,9 +22,9 @@
                 <td>{{ producao.quantidade_kg }}</td>
                 <td>{{ producao.qualidade }}</td>
                 <td>
-                    <a href="{{ url_for('visualizar_producao', id=producao.id) }}" style="color: #2980b9;">Ver</a>
+                    <a href="{{ url_for('producao.visualizar_producao', id=producao.id) }}" style="color: #2980b9;">Ver</a>
                     {% if current_user.role in ['PRODUTOR', 'ADM'] %}
-                        | <a href="{{ url_for('editar_producao', id=producao.id) }}" style="color: #27ae60;">Editar</a>
+                        | <a href="{{ url_for('producao.editar_producao', id=producao.id) }}" style="color: #27ae60;">Editar</a>
                     {% endif %}
                 </td>
             </tr>

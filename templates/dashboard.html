@@ -11,8 +11,8 @@
                 <h3>Área do Produtor</h3>
                 <p>Aqui você pode gerenciar suas plantações de café, visualizar relatórios de produção e acompanhar o histórico de colheitas.</p>
                 <ul>
-                    <li><a href="{{ url_for('create_lavoura') }}">Adicionar Nova Lavoura</a></li>
-                    <li><a href="{{ url_for('list_lavouras') }}">Ver Lavouras</a></li>
+                    <li><a href="{{ url_for('lavoura.create_lavoura') }}">Adicionar Nova Lavoura</a></li>
+                    <li><a href="{{ url_for('lavoura.list_lavouras') }}">Ver Lavouras</a></li>
                 </ul>
             </div>
         {% elif current_user.role == 'AGRONOMA' %}

@@ -18,8 +18,8 @@
                         {% if current_user.role == 'ADM' %}
                             <li><a href="{{ url_for('producer.list_producers') }}">Listar Produtores</a></li>
                             <li><a href="{{ url_for('producer.register_producer') }}">Cadastrar Produtor</a></li>
-                            <li><a href="{{ url_for('list_lavouras') }}">Lavouras</a></li>
-                            <li><a href="{{ url_for('listar_producao') }}">Produção</a></li>
+                            <li><a href="{{ url_for('lavoura.list_lavouras') }}">Lavouras</a></li>
+                            <li><a href="{{ url_for('producao.listar_producao') }}">Produção</a></li>
                             <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
                         {% endif %}
                         {% if current_user.role == 'AGRONOMA' %}
@@ -27,8 +27,8 @@
                             <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
                         {% endif %}
                         {% if current_user.role == 'PRODUTOR' %}
-                            <li><a href="{{ url_for('list_lavouras') }}">Minhas Lavouras</a></li>
-                            <li><a href="{{ url_for('listar_producao') }}">Produção</a></li>
+                            <li><a href="{{ url_for('lavoura.list_lavouras') }}">Minhas Lavouras</a></li>
+                            <li><a href="{{ url_for('producao.listar_producao') }}">Produção</a></li>
                         {% endif %}
                         <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
                     {% else %}

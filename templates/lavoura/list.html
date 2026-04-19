@@ -3,11 +3,11 @@
 {% block content %}
 <div style="background: white; padding: 2rem; border-radius: 8px;">
     <h1>Lavouras</h1>
-    <a href="{{ url_for('create_lavoura') }}" style="display:inline-block; margin-bottom:1rem; padding: 0.5rem 1rem; background: #2c3e50; color: white; text-decoration: none; border-radius: 4px;">Criar Nova Lavoura</a>
+    <a href="{{ url_for('lavoura.create_lavoura') }}" style="display:inline-block; margin-bottom:1rem; padding: 0.5rem 1rem; background: #2c3e50; color: white; text-decoration: none; border-radius: 4px;">Criar Nova Lavoura</a>
     <ul>
         {% for lavoura in lavouras %}
             <li>
-                <a href="{{ url_for('detail_lavoura', id=lavoura.id) }}">{{ lavoura.nome }}</a> - Área: {{ lavoura.area_plantada }} ha
+                <a href="{{ url_for('lavoura.detail_lavoura', id=lavoura.id) }}">{{ lavoura.nome }}</a> - Área: {{ lavoura.area_plantada }} ha
             </li>
         {% else %}
             <li>Nenhuma lavoura cadastrada.</li>
