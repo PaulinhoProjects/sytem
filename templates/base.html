@@ -34,6 +34,7 @@
                         <a href="{{ url_for('producer.register_producer') }}">Novos Vínculos</a>
                     {% endif %}
                     
+                    <span style="margin-left: auto; color: var(--accent); font-weight: bold; background: rgba(0,0,0,0.2); padding: 0.3rem 0.8rem; border-radius: 6px;">{{ current_user.username }}</span>
                     <a href="{{ url_for('auth.logout') }}" style="background: rgba(255,255,255,0.15); margin-left: 1rem; border: 1px solid rgba(255,255,255,0.3);">Sair</a>
                 {% else %}
                     <a href="{{ url_for('auth.login') }}">Entrar</a>
