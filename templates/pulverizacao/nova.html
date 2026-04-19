@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-small">
+    <div class="card fade-in">
+        <h2>💊 Registrar Pulverização</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label>Lavoura</label>
+                <select name="lavoura_id" class="form-control" required>
+                    {% for l in lavouras %}
+                    <option value="{{ l.id }}">{{ l.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Produto (Defensivo)</label>
+                <select name="produto_id" class="form-control">
+                    {% for p in produtos %}
+                    <option value="{{ p.id }}">{{ p.nome }} (Saldo: {{ p.quantidade_atual }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Dose por ha</label>
+                    <input type="number" step="0.01" name="dose_por_ha" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Volume Calda (L)</label>
+                    <input type="number" step="0.01" name="volume_calda" class="form-control" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Condição Climática</label>
+                <input type="text" name="clima" class="form-control" placeholder="Ex: Sol 28°C, Umidade 60%">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%">Salvar Aplicação</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

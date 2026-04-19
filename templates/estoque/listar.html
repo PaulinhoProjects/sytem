@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between">
+        <h2>📦 Gestão de Estoque</h2>
+        <a href="{{ url_for('estoque.novo') }}" class="btn btn-primary">+ Novo Produto</a>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Saldo Atual</th>
+                        <th>Unidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in produtos %}
+                    <tr>
+                        <td><strong>{{ p.nome }}</strong></td>
+                        <td>{{ p.categoria }}</td>
+                        <td>{{ p.quantidade_atual }}</td>
+                        <td>{{ p.unidade_medida }}</td>
+                        <td>
+                            <a href="{{ url_for('estoque.movimentar', id=p.id) }}" class="btn btn-secondary btn-sm">Movimentar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

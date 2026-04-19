@@ -28,12 +28,16 @@ def create_app(config_name='development'):
     from routes.lavoura import lavoura_bp
     from routes.producao import producao_bp
     from routes.alertas import alertas_bp
+    from routes.estoque import estoque_bp
+    from routes.pulverizacao import pulverizacao_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(producer_bp, url_prefix='/produtor')
     app.register_blueprint(lavoura_bp)
     app.register_blueprint(producao_bp)
     app.register_blueprint(alertas_bp, url_prefix='/alertas')
+    app.register_blueprint(estoque_bp)
+    app.register_blueprint(pulverizacao_bp)
 
     @app.route('/')
     @login_required
