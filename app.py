@@ -3,8 +3,9 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
+from datetime import datetime
 
-from models import db, Usuario, Produtor, Lavoura, Documento
+from models import db, Usuario, Produtor, Lavoura, Documento, Producao
 from utils import isolamento_produtor
 from routes.auth import auth_bp
 from routes.producer import producer_bp
@@ -39,7 +40,7 @@ def dashboard():
         produtor = current_user.produtor
     return render_template('dashboard.html', produtor=produtor)
 
-# ====== NOVAS ROTAS LAVOURA ======
+# ====== ROTAS LAVOURA ======
 
 @app.route('/lavouras')
 @login_required
@@ -148,6 +149,140 @@ def upload_documento(id):
         db.session.commit()
         flash('Documento anexado com sucesso!')
     return redirect(url_for('detail_lavoura', id=id))
+
+# ====== NOVAS ROTAS PRODUÇÃO ======
+
+@app.route('/producao')
+@login_required
+def listar_producao():
+    if current_user.role == 'PRODUTOR' and current_user.produtor:
+        producoes = Producao.query.filter_by(produtor_id=current_user.produtor.id).all()
+    elif current_user.role in ['AGRONOMA', 'ADM']:
+        producoes = Producao.query.all()
+    else:
+        producoes = []
+    return render_template('producao/listar.html', producoes=producoes)
+
+@app.route('/producao/nova', methods=['GET', 'POST'])
+@login_required
+def nova_producao():
+    if current_user.role not in ['PRODUTOR', 'ADM']:
+        flash('Acesso negado.')
+        return redirect(url_for('dashboard'))
+    if request.method == 'POST':
+        lavoura_id = request.form.get('lavoura_id')
+        data_colheita = request.form.get('data_colheita')
+        quantidade_kg = request.form.get('quantidade_kg')
+        qualidade = request.form.get('qualidade')
+        observacoes = request.form.get('observacoes')
+        
+        if not lavoura_id or not data_colheita or not quantidade_kg:
+            flash('Campos obrigatórios não preenchidos.', 'error')
+            return redirect(request.url)
+        try:
+            quantidade_kg = float(quantidade_kg)
+            if quantidade_kg <= 0: raise ValueError
+        except ValueError:
+            flash('Quantidade deve ser um número positivo.', 'error')
+            return redirect(request.url)
+        
+        try:
+            data_colheita = datetime.strptime(data_colheita, '%Y-%m-%d').date()
+        except ValueError:
+            flash('Data inválida.', 'error')
+            return redirect(request.url)
+        
+        lavoura = Lavoura.query.get(lavoura_id)
+        if not lavoura or (current_user.role == 'PRODUTOR' and lavoura.produtor_id != current_user.produtor.id):
+            flash('Lavoura inválida.', 'error')
+            return redirect(request.url)
+        
+        producao = Producao(
+            lavoura_id=lavoura_id,
+            produtor_id=current_user.produtor.id if current_user.role == 'PRODUTOR' else lavoura.produtor_id,
+            data_colheita=data_colheita,
+            quantidade_kg=quantidade_kg,
+            qualidade=qualidade,
+            observacoes=observacoes
+        )
+        db.session.add(producao)
+        db.session.commit()
+        flash('Produção registrada com sucesso!', 'success')
+        return redirect(url_for('listar_producao'))
+    
+    if current_user.role == 'PRODUTOR' and current_user.produtor:
+        lavouras = Lavoura.query.filter_by(produtor_id=current_user.produtor.id).all()
+    else:
+        lavouras = Lavoura.query.all()
+    return render_template('producao/nova.html', lavouras=lavouras)
+
+@app.route('/producao/<int:id>/editar', methods=['GET', 'POST'])
+@login_required
+def editar_producao(id):
+    producao = Producao.query.get_or_404(id)
+    if current_user.role == 'PRODUTOR' and producao.produtor_id != current_user.produtor.id:
+        flash('Acesso negado.')
+        return redirect(url_for('listar_producao'))
+    if current_user.role not in ['PRODUTOR', 'ADM']:
+        flash('Acesso negado.')
+        return redirect(url_for('listar_producao'))
+    
+    if request.method == 'POST':
+        data_colheita = request.form.get('data_colheita')
+        quantidade_kg = request.form.get('quantidade_kg')
+        qualidade = request.form.get('qualidade')
+        observacoes = request.form.get('observacoes')
+        
+        if not data_colheita or not quantidade_kg:
+            flash('Campos obrigatórios não preenchidos.', 'error')
+            return redirect(request.url)
+        try:
+            quantidade_kg = float(quantidade_kg)
+            if quantidade_kg <= 0: raise ValueError
+        except ValueError:
+            flash('Quantidade deve ser um número positivo.', 'error')
+            return redirect(request.url)
+        
+        try:
+            data_colheita = datetime.strptime(data_colheita, '%Y-%m-%d').date()
+        except ValueError:
+            flash('Data inválida.', 'error')
+            return redirect(request.url)
+        
+        producao.data_colheita = data_colheita
+        producao.quantidade_kg = quantidade_kg
+        producao.qualidade = qualidade
+        producao.observacoes = observacoes
+        db.session.commit()
+        flash('Produção atualizada com sucesso.', 'success')
+        return redirect(url_for('listar_producao'))
+    
+    return render_template('producao/editar.html', producao=producao)
+
+@app.route('/producao/<int:id>/visualizar')
+@login_required
+def visualizar_producao(id):
+    producao = Producao.query.get_or_404(id)
+    if current_user.role == 'PRODUTOR' and producao.produtor_id != current_user.produtor.id:
+        flash('Acesso negado.')
+        return redirect(url_for('listar_producao'))
+    if current_user.role not in ['PRODUTOR', 'AGRONOMA', 'ADM']:
+        flash('Acesso negado.')
+        return redirect(url_for('listar_producao'))
+    return render_template('producao/visualizar.html', producao=producao)
+
+@app.route('/relatorios')
+@login_required
+def relatorios():
+    if current_user.role not in ['AGRONOMA', 'ADM']:
+        flash('Acesso negado.')
+        return redirect(url_for('dashboard'))
+    
+    producoes = Producao.query.all()
+    total_quantidade = sum(p.quantidade_kg for p in producoes)
+    total_registros = len(producoes)
+    
+    return render_template('relatorios.html', producoes=producoes, total_quantidade=total_quantidade, total_registros=total_registros)
 
 if __name__ == '__main__':
     with app.app_context():

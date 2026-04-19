@@ -19,12 +19,16 @@
                             <li><a href="{{ url_for('producer.list_producers') }}">Listar Produtores</a></li>
                             <li><a href="{{ url_for('producer.register_producer') }}">Cadastrar Produtor</a></li>
                             <li><a href="{{ url_for('list_lavouras') }}">Lavouras</a></li>
+                            <li><a href="{{ url_for('listar_producao') }}">Produção</a></li>
+                            <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
                         {% endif %}
-                        {% if current_user.role in ['AGRONOMA', 'ADM'] %}
+                        {% if current_user.role == 'AGRONOMA' %}
                             <li><a href="#">Análises</a></li>
+                            <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
                         {% endif %}
                         {% if current_user.role == 'PRODUTOR' %}
                             <li><a href="{{ url_for('list_lavouras') }}">Minhas Lavouras</a></li>
+                            <li><a href="{{ url_for('listar_producao') }}">Produção</a></li>
                         {% endif %}
                         <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
                     {% else %}
@@ -56,7 +60,7 @@
                 {% if messages %}
                     <ul class="errors">
                         {% for message in messages %}
-                            <li style="color: green;">{{ message }}</li>
+                            <li style="color: green; background-color: #d4edda; padding: 10px; margin-bottom: 10px; border-radius: 4px; list-style-type: none;">{{ message }}</li>
                         {% endfor %}
                     </ul>
                 {% endif %}

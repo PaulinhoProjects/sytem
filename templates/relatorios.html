@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Relatórios de Produção{% endblock %}
+{% block content %}
+<div style="background: white; padding: 2rem; border-radius: 8px;">
+    <h1>Relatórios e Métricas de Produção</h1>
+    
+    <div style="display: flex; gap: 2rem; margin: 2rem 0;">
+        <div style="background: #eaf1f8; padding: 1.5rem; border-radius: 8px; flex: 1;">
+            <h3>Total de Lotes/Registros</h3>
+            <p style="font-size: 2rem; color: #2c3e50; font-weight: bold;">{{ total_registros }}</p>
+        </div>
+        <div style="background: #d4edda; padding: 1.5rem; border-radius: 8px; flex: 1;">
+            <h3>Volume Total (kg)</h3>
+            <p style="font-size: 2rem; color: #27ae60; font-weight: bold;">{{ total_quantidade }}</p>
+        </div>
+    </div>
+    
+    <h2>Listagem Resumida</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Lavoura</th>
+                <th>Produtor</th>
+                <th>Quantidade (kg)</th>
+                <th>Qualidade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producao in producoes %}
+            <tr>
+                <td>{{ producao.data_colheita }}</td>
+                <td>{{ producao.lavoura.nome }}</td>
+                <td>{{ producao.produtor.user.username }}</td>
+                <td>{{ producao.quantidade_kg }}</td>
+                <td>{{ producao.qualidade }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Nenhum registro encontrado para consolidação.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
