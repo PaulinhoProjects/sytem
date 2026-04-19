@@ -7,7 +7,7 @@
     <ul>
         {% for lavoura in lavouras %}
             <li>
-                <a href="{{ url_for('detail_lavoura', id=lavoura.id) }}">{{ lavoura.nome }}</a> - Área: {{ lavoura.area }} ha
+                <a href="{{ url_for('detail_lavoura', id=lavoura.id) }}">{{ lavoura.nome }}</a> - Área: {{ lavoura.area_plantada }} ha
             </li>
         {% else %}
             <li>Nenhuma lavoura cadastrada.</li>
