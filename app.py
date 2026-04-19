@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, url_for, abort
 from flask_login import LoginManager, login_required, current_user
 import os
 
-from models import db, Usuario, Producao
+from models import db, Usuario, Lavoura, Producao
 from routes.auth import auth_bp
 from routes.producer import producer_bp
 from routes.lavoura import lavoura_bp
@@ -36,7 +36,27 @@ def index():
 @login_required
 def dashboard():
     produtor = current_user.produtor if current_user.role == 'PRODUTOR' else None
-    return render_template('dashboard.html', produtor=produtor)
+    total_lavouras = 0
+    total_producao = 0
+    ultimas_producoes = []
+    
+    if current_user.role == 'PRODUTOR' and produtor:
+        lavouras = Lavoura.query.filter_by(produtor_id=produtor.id).all()
+        total_lavouras = len(lavouras)
+        producoes = Producao.query.filter_by(produtor_id=produtor.id).order_by(Producao.data_colheita.desc()).all()
+        total_producao = sum(p.quantidade_kg for p in producoes)
+        ultimas_producoes = producoes[:5]
+    elif current_user.role in ['AGRONOMA', 'ADM']:
+        total_lavouras = Lavoura.query.count()
+        producoes = Producao.query.order_by(Producao.data_colheita.desc()).all()
+        total_producao = sum(p.quantidade_kg for p in producoes)
+        ultimas_producoes = producoes[:5]
+        
+    return render_template('dashboard.html', 
+                           produtor=produtor,
+                           total_lavouras=total_lavouras,
+                           total_producao=total_producao,
+                           ultimas_producoes=ultimas_producoes)
 
 @app.route('/relatorios')
 @login_required
