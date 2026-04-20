@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Relatório de Aplicação #{{ aplicacao.id }}{% endblock %}
+{% block content %}
+<div class="grid" style="max-width:900px;margin:0 auto;">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <div>
+            <h2 style="margin:0;">Relatório de Pulverização #{{ aplicacao.id }}</h2>
+            <p style="margin:4px 0 0;color:#888;">Realizada em {{ aplicacao.data_aplicacao.strftime('%d/%m/%Y') }}</p>
+        </div>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('pulverizacao.detalhes_cronograma', id=aplicacao.cronograma_id) }}" class="btn btn-secondary">← Cronograma</a>
+            <button onclick="window.print()" class="btn btn-secondary">🖨️ Imprimir</button>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;padding-bottom:1.5rem;border-bottom:1px solid #eee;">
+            <div>
+                <p style="color:#888;margin:0;font-size:0.8rem;">PRODUTOR</p>
+                <p style="font-weight:600;margin:4px 0;">{{ aplicacao.produtor.name }}</p>
+            </div>
+            <div>
+                <p style="color:#888;margin:0;font-size:0.8rem;">LAVOURA</p>
+                <p style="font-weight:600;margin:4px 0;">{{ aplicacao.lavoura.nome }}</p>
+            </div>
+            <div>
+                <p style="color:#888;margin:0;font-size:0.8rem;">ÁREA TRATADA</p>
+                <p style="font-weight:600;margin:4px 0;">{{ aplicacao.area_aplicada }} hectares</p>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:30px;margin-top:1.5rem;">
+            <!-- Tech Details -->
+            <div>
+                <h4 style="margin-top:0;color:var(--primary,#4f8a3a);">🧪 Informações Técnicas</h4>
+                <table style="width:100%;border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid #f9f9f9;"><td style="padding:8px 0;color:#666;">Produto</td><td><strong>{{ aplicacao.produto.nome }}</strong> ({{ aplicacao.produto.ingrediente_ativo or 'N/A' }})</td></tr>
+                    <tr style="border-bottom:1px solid #f9f9f9;"><td style="padding:8px 0;color:#666;">Quantidade Total</td><td>{{ aplicacao.quantidade_aplicada }} {{ aplicacao.produto.unidade_dose }}</td></tr>
+                    <tr style="border-bottom:1px solid #f9f9f9;"><td style="padding:8px 0;color:#666;">Volume de Calda</td><td>{{ aplicacao.volume_calda or '—' }} Litros</td></tr>
+                    <tr style="border-bottom:1px solid #f9f9f9;"><td style="padding:8px 0;color:#666;">Equipamento</td><td>{{ aplicacao.equipamento_utilizado or '—' }}</td></tr>
+                    <tr style="border-bottom:1px solid #f9f9f9;"><td style="padding:8px 0;color:#666;">Período de Carência</td><td><span style="color:#dc2626;font-weight:600;">{{ dias_carencia }} dias restantes</span></td></tr>
+                </table>
+            </div>
+
+            <!-- Climate Details -->
+            <div style="background:#f8fafc;padding:15px;border-radius:10px;border:1px solid #e2e8f0;">
+                <h4 style="margin-top:0;color:var(--primary,#4f8a3a);font-size:0.9rem;">🌤️ Condições Climáticas</h4>
+                <p style="font-size:0.85rem;margin:8px 0;"><strong>Tempo:</strong> {{ aplicacao.condicoes_clima|capitalize }}</p>
+                <p style="font-size:0.85rem;margin:8px 0;"><strong>Vento:</strong> {{ aplicacao.velocidade_vento|capitalize }}</p>
+                <p style="font-size:0.85rem;margin:8px 0;"><strong>Temperatura:</strong> {{ aplicacao.temperatura or '—' }} ºC</p>
+                <p style="font-size:0.85rem;margin:8px 0;"><strong>Umidade:</strong> {{ aplicacao.umidade or '—' }} %</p>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #eee;">
+            <div style="display:flex;justify-content:space-between;">
+                <div style="flex:1;">
+                    <h4 style="margin-top:0;color:var(--primary,#4f8a3a);">👷 Operacional</h4>
+                    <p style="font-size:0.9rem;"><strong>Aplicador:</strong> {{ aplicacao.aplicador_nome or 'Não informado' }}</p>
+                    <p style="font-size:0.9rem;"><strong>EPIs:</strong> {{ aplicacao.epi_utilizado or 'Não informado' }}</p>
+                    <p style="font-size:0.9rem;"><strong>Horário:</strong> {{ aplicacao.hora_inicio.strftime('%H:%M') if aplicacao.hora_inicio else '—' }} às {{ aplicacao.hora_fim.strftime('%H:%M') if aplicacao.hora_fim else '—' }}</p>
+                </div>
+                <div style="flex:1;background:#ecfdf5;padding:15px;border-radius:8px;border:1px solid #bbf7d0;">
+                    <h4 style="margin-top:0;color:#065f46;">📊 Eficácia e Notas</h4>
+                    <p style="font-size:0.9rem;"><strong>Eficácia:</strong> {{ aplicacao.eficacia|capitalize }}</p>
+                    <p style="font-size:0.85rem;color:#065f46;font-style:italic;">"{{ aplicacao.observacoes or 'Sem observações.' }}"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn { display: none; }
+    body { background: white; }
+    .card { border: none; box-shadow: none; }
+}
+.flex { display: flex; align-items: center; }
+</style>
+{% endblock %}

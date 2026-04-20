@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Novo Cronograma — Pulverização{% endblock %}
+{% block content %}
+<div class="grid" style="max-width:800px;margin:0 auto;">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <h2 style="margin:0;">📅 Novo Cronograma de Pulverização</h2>
+        <a href="{{ url_for('pulverizacao.listar_cronogramas') }}" class="btn btn-secondary">← Voltar</a>
+    </div>
+
+    <div class="card">
+        <form method="POST" class="form">
+            <div class="form-row">
+                <div class="form-col-12">
+                    <label>Título do Planejamento *</label>
+                    <input type="text" name="titulo" required placeholder="Ex: Aplicação Fungicida - Safra 2024">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col-6">
+                    <label>Lavoura *</label>
+                    <select name="lavoura_id" required>
+                        <option value="">Selecione a lavoura...</option>
+                        {% for l in lavouras %}
+                        <option value="{{ l.id }}">{{ l.nome }} ({{ l.area_plantada }} ha)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-col-6">
+                    <label>Produtor *</label>
+                    <select name="produtor_id" required>
+                        <option value="">Selecione o produtor...</option>
+                        {% for p in produtores %}
+                        <option value="{{ p.id }}">{{ p.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col-6">
+                    <label>Data Planejada *</label>
+                    <input type="date" name="data_planejada" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col-12">
+                    <label>Descrição do Objetivo</label>
+                    <textarea name="descricao" rows="2" placeholder="Descreva o que deve ser feito..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col-12">
+                    <label>Observações Técnicas</label>
+                    <textarea name="observacoes" rows="3" placeholder="Recomendações, condições climáticas ideais, etc."></textarea>
+                </div>
+            </div>
+
+            <div class="flex-between" style="margin-top:2rem;padding-top:1rem;border-top:1px solid #eee;">
+                <a href="{{ url_for('pulverizacao.listar_cronogramas') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">💾 Salvar Cronograma</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.form-row { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+.form-col-6 { flex: 1; min-width: 280px; }
+.form-col-12 { flex: 100%; }
+label { display: block; margin-bottom: 8px; font-weight: 500; color: #444; }
+input, select, textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; background: #fff; box-sizing: border-box; }
+</style>
+{% endblock %}

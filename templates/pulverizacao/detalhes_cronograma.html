@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Detalhes do Cronograma — {{ cronograma.titulo }}{% endblock %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <div>
+            <h2 style="margin:0;">{{ cronograma.titulo }}</h2>
+            <p style="margin:4px 0 0;color:#888;">
+                Lavoura: <strong>{{ cronograma.lavoura.nome }}</strong> · 
+                Data Planejada: <strong>{{ cronograma.data_planejada.strftime('%d/%m/%Y') }}</strong>
+            </p>
+        </div>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('pulverizacao.listar_cronogramas') }}" class="btn btn-secondary">← Voltar</a>
+            {% if cronograma.status == 'planejada' %}
+                <a href="{{ url_for('pulverizacao.criar_aplicacao') }}?cronograma_id={{ cronograma.id }}" class="btn btn-primary">⚡ Executar Agora</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+        <div class="card">
+            <h4 style="margin-top:0;color:var(--primary,#4f8a3a);">ℹ️ Detalhes da Ordem</h4>
+            <div style="font-size:0.95rem;line-height:1.6;">
+                <p><strong>Status:</strong> 
+                    {% if cronograma.status == 'planejada' %}<span class="badge badge-info">PLANEJADA</span>
+                    {% elif cronograma.status == 'concluida' %}<span class="badge badge-success">CONCLUÍDA</span>
+                    {% else %}<span class="badge badge-error">{{ cronograma.status|upper }}</span>{% endif %}
+                </p>
+                <p><strong>Descrição:</strong><br>{{ cronograma.descricao or 'Nenhuma descrição fornecida.' }}</p>
+                <p><strong>Observações Técnicas:</strong><br><span style="color:#666;">{{ cronograma.observacoes or 'Nenhuma observação.' }}</span></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h4 style="margin-top:0;color:var(--primary,#4f8a3a);">🌱 Informações da Área</h4>
+            <div style="font-size:0.95rem;line-height:1.6;">
+                <p><strong>Produtor:</strong> {{ cronograma.produtor.name }}</p>
+                <p><strong>Área Total da Lavoura:</strong> {{ cronograma.lavoura.area_plantada }} hectares</p>
+                <p><strong>Localização:</strong> {{ cronograma.produtor.location or 'Não informada' }}</p>
+                <p><strong>Criado em:</strong> {{ cronograma.criado_em.strftime('%d/%m/%Y %H:%M') }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aplicações Vinculadas -->
+    <div class="card">
+        <h4 style="margin-top:0;color:var(--primary,#4f8a3a);">🧪 Execuções (Aplicações)</h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr><th>Data Realizada</th><th>Produto</th><th>Aplicador</th><th>Área (ha)</th><th>Eficácia</th><th>Ações</th></tr>
+                </thead>
+                <tbody>
+                    {% for a in aplicacoes %}
+                    <tr>
+                        <td>{{ a.data_aplicacao.strftime('%d/%m/%Y') }}</td>
+                        <td><strong>{{ a.produto.nome }}</strong></td>
+                        <td>{{ a.aplicador_nome or '—' }}</td>
+                        <td>{{ a.area_aplicada }} ha</td>
+                        <td>
+                            {% if a.eficacia == 'excelente' %}<span style="color:#16a34a;font-weight:700;">Excelente</span>
+                            {% elif a.eficacia == 'bom' %}<span style="color:#2563eb;font-weight:700;">Bom</span>
+                            {% else %}{{ a.eficacia|capitalize }}{% endif %}
+                        </td>
+                        <td><a href="{{ url_for('pulverizacao.detalhes_aplicacao', id=a.id) }}" class="btn btn-secondary btn-sm">Ver Relatório</a></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" style="text-align:center;color:#888;padding:1.5rem;">Nenhuma aplicação registrada para este cronograma ainda.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge { padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+.badge-info { background: #e0f2fe; color: #0284c7; }
+.badge-success { background: #dcfce7; color: #16a34a; }
+.badge-error { background: #fee2e2; color: #dc2626; }
+.flex { display: flex; align-items: center; }
+</style>
+{% endblock %}

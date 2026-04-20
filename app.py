@@ -8,7 +8,10 @@ from models.alertas import Alerta, PredictaoProducao, ScoreLavoura
 
 load_dotenv()
 
+from flask_migrate import Migrate
+
 login_manager = LoginManager()
+migrate = Migrate()
 
 
 def create_app(config_name='development'):
@@ -20,6 +23,7 @@ def create_app(config_name='development'):
     app.config.setdefault('UPLOAD_FOLDER', os.path.join(app.root_path, 'uploads'))
 
     db.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 

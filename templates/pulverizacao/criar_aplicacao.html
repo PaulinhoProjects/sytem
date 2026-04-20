@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Registrar Aplicação — Pulverização{% endblock %}
+{% block content %}
+<div class="grid" style="max-width:900px;margin:0 auto;">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <h2 style="margin:0;">🧪 Registrar Aplicação de Pulverização</h2>
+        <a href="{{ url_for('pulverizacao.listar_cronogramas') }}" class="btn btn-secondary">← Voltar</a>
+    </div>
+
+    <div class="card">
+        <form method="POST" class="form">
+            <!-- Vínculos -->
+            <div class="form-section">
+                <h4 style="margin-top:0;border-bottom:1px solid #eee;padding-bottom:10px;">📋 Vínculos e Planejamento</h4>
+                <div class="form-row">
+                    <div class="form-col-6">
+                        <label>Cronograma Referente *</label>
+                        <select name="cronograma_id" required>
+                            <option value="">Selecione o cronograma...</option>
+                            {% for c in cronogramas %}
+                            <option value="{{ c.id }}" {% if request.args.get('cronograma_id')|int == c.id %}selected{% endif %}>
+                                {{ c.data_planejada.strftime('%d/%m/%Y') }} - {{ c.titulo }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-col-6">
+                        <label>Lavoura Aplicada *</label>
+                        <select name="lavoura_id" required>
+                            <option value="">Selecione a lavoura...</option>
+                            {% for l in lavouras %}
+                            <option value="{{ l.id }}">{{ l.nome }} ({{ l.area_plantada }} ha)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produto e Alvo -->
+            <div class="form-section" style="margin-top:20px;">
+                <h4 style="margin-top:0;border-bottom:1px solid #eee;padding-bottom:10px;">🧪 Produto e Alvo</h4>
+                <div class="form-row">
+                    <div class="form-col-6">
+                        <label>Produto Utilizado *</label>
+                        <select name="produto_id" required>
+                            <option value="">Selecione o produto...</option>
+                            {% for p in produtos %}
+                            <option value="{{ p.id }}">{{ p.nome }} ({{ p.tipo|capitalize }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-col-6">
+                        <label>Praga/Doença Alvo (Opcional)</label>
+                        <select name="praga_id">
+                            <option value="">Nenhum alvo específico</option>
+                            {% for pr in pragas %}
+                            <option value="{{ pr.id }}">{{ pr.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dados da Aplicação -->
+            <div class="form-section" style="margin-top:20px;">
+                <h4 style="margin-top:0;border-bottom:1px solid #eee;padding-bottom:10px;">⏱️ Dados da Execução</h4>
+                <div class="form-row">
+                    <div class="form-col-4">
+                        <label>Data da Aplicação *</label>
+                        <input type="date" name="data_aplicacao" value="{{ now.strftime('%Y-%m-%d') }}" required>
+                    </div>
+                    <div class="form-col-4">
+                        <label>Hora Início</label>
+                        <input type="time" name="hora_inicio">
+                    </div>
+                    <div class="form-col-4">
+                        <label>Hora Fim</label>
+                        <input type="time" name="hora_fim">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col-4">
+                        <label>Quantidade Aplicada *</label>
+                        <input type="number" step="0.01" name="quantidade_aplicada" required placeholder="Ex: 50.5">
+                        <small style="color:#888;">Na unidade do produto (L, kg, etc)</small>
+                    </div>
+                    <div class="form-col-4">
+                        <label>Área Aplicada (ha) *</label>
+                        <input type="number" step="0.01" name="area_aplicada" required placeholder="Ex: 10.0">
+                    </div>
+                    <div class="form-col-4">
+                        <label>Volume de Calda (L)</label>
+                        <input type="number" step="0.01" name="volume_calda" placeholder="Opcional">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Condições Climáticas -->
+            <div class="form-section" style="margin-top:20px;">
+                <h4 style="margin-top:0;border-bottom:1px solid #eee;padding-bottom:10px;">🌤️ Condições Climáticas e Equipamento</h4>
+                <div class="form-row">
+                    <div class="form-col-4">
+                        <label>Condição do Tempo</label>
+                        <select name="condicoes_clima">
+                            {% for c in condicoes_clima %}
+                            <option value="{{ c }}">{{ c|capitalize }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-col-4">
+                        <label>Velocidade do Vento</label>
+                        <select name="velocidade_vento">
+                            {% for v in velocidades_vento %}
+                            <option value="{{ v }}">{{ v|capitalize }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-col-2">
+                        <label>Temp. (ºC)</label>
+                        <input type="number" step="0.1" name="temperatura">
+                    </div>
+                    <div class="form-col-2">
+                        <label>Umid. (%)</label>
+                        <input type="number" step="0.1" name="umidade">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col-6">
+                        <label>Equipamento Utilizado</label>
+                        <input type="text" name="equipamento_utilizado" placeholder="Ex: Trator MF 4292 + Jacto 2000L">
+                    </div>
+                    <div class="form-col-6">
+                        <label>Eficácia Observada</label>
+                        <select name="eficacia">
+                            {% for e in eficacias %}
+                            <option value="{{ e }}">{{ e|capitalize }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section" style="margin-top:20px;">
+                <h4 style="margin-top:0;border-bottom:1px solid #eee;padding-bottom:10px;">👷 Responsabilidade</h4>
+                <div class="form-row">
+                    <div class="form-col-6">
+                        <label>Nome do Aplicador</label>
+                        <input type="text" name="aplicador_nome" placeholder="Nome completo do operador">
+                    </div>
+                    <div class="form-col-6">
+                        <label>EPIs Utilizados</label>
+                        <input type="text" name="epi_utilizado" placeholder="Ex: Máscara, Luvas, Jaleco">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row" style="margin-top:20px;">
+                <div class="form-col-12">
+                    <label>Observações Adicionais</label>
+                    <textarea name="observacoes" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="flex-between" style="margin-top:2rem;padding-top:1rem;border-top:1px solid #eee;">
+                <a href="{{ url_for('pulverizacao.listar_cronogramas') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">✅ Registrar Aplicação</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.form-section { padding: 10px 0; }
+.form-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+.form-col-2 { flex: 0 0 calc(16.6% - 13px); min-width: 80px; }
+.form-col-4 { flex: 0 0 calc(33.3% - 10px); min-width: 150px; }
+.form-col-6 { flex: 0 0 calc(50% - 8px); min-width: 250px; }
+.form-col-12 { flex: 100%; }
+label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: #555; }
+input, select, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: #fff; box-sizing: border-box; }
+h4 { color: var(--primary, #4f8a3a); margin-bottom: 15px; font-size: 1.1rem; }
+</style>
+{% endblock %}

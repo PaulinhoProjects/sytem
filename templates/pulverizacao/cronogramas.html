@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Cronogramas de Pulverização{% endblock %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <div>
+            <h2 style="margin:0;">📅 Cronogramas de Pulverização</h2>
+            <p style="margin:4px 0 0;color:#888;font-size:0.9rem;">Planejamento de aplicações</p>
+        </div>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('pulverizacao.dashboard_pulverizacao') }}" class="btn btn-secondary">← Dashboard</a>
+            <a href="{{ url_for('pulverizacao.criar_cronograma') }}" class="btn btn-primary">+ Novo Cronograma</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data Planejada</th>
+                        <th>Título</th>
+                        <th>Lavoura</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in cronogramas.items %}
+                    <tr>
+                        <td><strong>{{ c.data_planejada.strftime('%d/%m/%Y') }}</strong></td>
+                        <td>{{ c.titulo }}</td>
+                        <td>{{ c.lavoura.nome }}</td>
+                        <td>
+                            {% if c.status == 'planejada' %}
+                                <span class="badge badge-info">PLANEJADA</span>
+                            {% elif c.status == 'concluida' %}
+                                <span class="badge badge-success">CONCLUÍDA</span>
+                            {% elif c.status == 'cancelada' %}
+                                <span class="badge badge-error">CANCELADA</span>
+                            {% else %}
+                                <span class="badge badge-warning">{{ c.status|upper }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('pulverizacao.detalhes_cronograma', id=c.id) }}" class="btn btn-secondary btn-sm">Detalhes</a>
+                            {% if c.status == 'planejada' %}
+                                <a href="{{ url_for('pulverizacao.criar_aplicacao') }}?cronograma_id={{ c.id }}" class="btn btn-primary btn-sm">Aplicar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" style="text-align:center;color:#888;padding:2rem;">Nenhum cronograma encontrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge { padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; }
+.badge-info { background: #e0f2fe; color: #0284c7; }
+.badge-success { background: #dcfce7; color: #16a34a; }
+.badge-error { background: #fee2e2; color: #dc2626; }
+.badge-warning { background: #fef3c7; color: #d97706; }
+.btn-sm { padding: 4px 8px; font-size: 0.8rem; }
+.flex { display: flex; align-items: center; }
+</style>
+{% endblock %}

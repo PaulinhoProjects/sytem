@@ -71,6 +71,7 @@ class Produto(db.Model):
     descricao = db.Column(db.Text, nullable=True)
     fornecedor = db.Column(db.String(150), nullable=True)
     ativo = db.Column(db.Boolean, default=True)
+    deleted_at = db.Column(db.DateTime, nullable=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
     atualizado_em = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -131,7 +132,8 @@ class Produto(db.Model):
             'valor_total': self.valor_total_estoque(),
             'descricao': self.descricao,
             'fornecedor': self.fornecedor,
-            'ativo': self.ativo
+            'ativo': self.ativo,
+            'deleted_at': self.deleted_at.isoformat() if self.deleted_at else None
         }
 
 class MovimentacaoEstoque(db.Model):
