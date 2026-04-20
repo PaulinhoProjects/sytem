@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Histórico de Movimentações{% endblock %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <div>
+            <h2 style="margin:0;">📋 Histórico de Movimentações</h2>
+            <p style="margin:4px 0 0;color:#888;font-size:.9rem;">Total: {{ movimentacoes.total }} movimentação(ões)</p>
+        </div>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('estoque.dashboard_estoque') }}" class="btn btn-secondary">← Dashboard</a>
+            <a href="{{ url_for('estoque.criar_movimentacao') }}" class="btn btn-primary">+ Nova Movimentação</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr><th>Data</th><th>Produto</th><th>Tipo</th><th>Quantidade</th><th>Produtor</th><th>Usuário</th><th>NF</th><th>Observação</th></tr>
+                </thead>
+                <tbody>
+                    {% for m in movimentacoes.items %}
+                    <tr>
+                        <td><small>{{ m.data_movimentacao.strftime('%d/%m/%Y %H:%M') }}</small></td>
+                        <td>
+                            {% if m.produto %}
+                            <a href="{{ url_for('estoque.detalhes_produto', id=m.produto_id) }}" style="font-weight:600;text-decoration:none;">{{ m.produto.nome }}</a>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>
+                            {% if m.tipo == 'entrada' %}<span class="badge badge-success">ENTRADA</span>
+                            {% elif m.tipo == 'saida' %}<span class="badge badge-error">SAÍDA</span>
+                            {% elif m.tipo == 'devolucao' %}<span class="badge badge-info">DEVOLUÇÃO</span>
+                            {% else %}<span class="badge badge-warning">AJUSTE</span>{% endif %}
+                        </td>
+                        <td><strong>{{ "%.2f"|format(m.quantidade) }}</strong></td>
+                        <td><small>{{ m.produtor.name if m.produtor else '—' }}</small></td>
+                        <td><small>{{ m.usuario.username if m.usuario else '—' }}</small></td>
+                        <td><small>{{ m.numero_nf or '—' }}</small></td>
+                        <td><small style="color:#888;">{{ (m.observacao or '')[:40] }}{% if m.observacao and m.observacao|length > 40 %}…{% endif %}</small></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="8" style="text-align:center;padding:2rem;color:#888;">Nenhuma movimentação registrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if movimentacoes.pages > 1 %}
+        <div class="flex" style="justify-content:center;gap:8px;margin-top:1rem;">
+            {% if movimentacoes.has_prev %}
+                <a href="{{ url_for('estoque.listar_movimentacoes', page=movimentacoes.prev_num) }}" class="btn btn-secondary btn-sm">← Anterior</a>
+            {% endif %}
+            <span style="padding:4px 12px;border-radius:6px;background:var(--primary,#4f8a3a);color:#fff;font-size:.85rem;">
+                Pág. {{ movimentacoes.page }} / {{ movimentacoes.pages }}
+            </span>
+            {% if movimentacoes.has_next %}
+                <a href="{{ url_for('estoque.listar_movimentacoes', page=movimentacoes.next_num) }}" class="btn btn-secondary btn-sm">Próxima →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.badge{padding:3px 8px;border-radius:4px;font-size:.72rem;font-weight:700;text-transform:uppercase;}
+.badge-error{background:#fee2e2;color:#dc2626;}.badge-warning{background:#fef3c7;color:#d97706;}
+.badge-info{background:#e0f2fe;color:#0284c7;}.badge-success{background:#dcfce7;color:#16a34a;}
+.flex{display:flex;align-items:center;}.btn-sm{padding:4px 10px;font-size:.8rem;}
+</style>
+{% endblock %}

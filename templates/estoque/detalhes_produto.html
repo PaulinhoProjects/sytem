@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ produto.nome }} — Detalhes{% endblock %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <div>
+            <h2 style="margin:0;">{{ produto.nome }}</h2>
+            <p style="margin:4px 0 0;color:#888;font-size:.9rem;">Cód: <code>{{ produto.codigo_interno }}</code> · {{ produto.categoria.nome }} · {{ produto.unidade_medida.sigla }}</p>
+        </div>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('estoque.editar_produto', id=produto.id) }}" class="btn btn-secondary">✏️ Editar</a>
+            <a href="{{ url_for('estoque.criar_movimentacao') }}?produto_id={{ produto.id }}" class="btn btn-primary">⇄ Movimentar</a>
+        </div>
+    </div>
+
+    <!-- Info + Saldo -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+        <div class="card">
+            <h4 style="margin-top:0;">ℹ️ Informações</h4>
+            <table style="width:100%;border-collapse:collapse;font-size:.9rem;">
+                <tr><td style="padding:6px 0;color:#888;">Fornecedor</td><td>{{ produto.fornecedor or '—' }}</td></tr>
+                <tr><td style="padding:6px 0;color:#888;">Qtd. Mínima</td><td>{{ produto.quantidade_minima }} {{ produto.unidade_medida.sigla }}</td></tr>
+                <tr><td style="padding:6px 0;color:#888;">Qtd. Máxima</td><td>{{ produto.quantidade_maxima }} {{ produto.unidade_medida.sigla }}</td></tr>
+                <tr><td style="padding:6px 0;color:#888;">Preço Unit.</td><td>R$ {{ "%.2f"|format(produto.preco_unitario) }}</td></tr>
+                <tr><td style="padding:6px 0;color:#888;">Cadastrado em</td><td>{{ produto.criado_em.strftime('%d/%m/%Y') }}</td></tr>
+            </table>
+            {% if produto.descricao %}
+            <p style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border,#e5e7eb);font-size:.85rem;color:#666;">{{ produto.descricao }}</p>
+            {% endif %}
+        </div>
+
+        <div class="card" style="text-align:center;">
+            <h4 style="margin-top:0;">📊 Posição de Estoque</h4>
+            {% set d = produto.to_dict() %}
+            <div style="font-size:3rem;font-weight:800;
+                {% if d.status == 'crítico' %}color:#dc2626;
+                {% elif d.status == 'baixo' %}color:#d97706;
+                {% elif d.status == 'alto' %}color:#0284c7;
+                {% else %}color:#16a34a;{% endif %}
+                margin:1rem 0;">
+                {{ "%.2f"|format(d.saldo_atual) }}
+            </div>
+            <div style="color:#888;font-size:.9rem;">{{ produto.unidade_medida.nome }}</div>
+            <div style="margin-top:12px;">
+                {% if d.status == 'crítico' %}<span class="badge badge-error" style="font-size:.9rem;padding:6px 16px;">⚠️ ESTOQUE CRÍTICO</span>
+                {% elif d.status == 'baixo' %}<span class="badge badge-warning" style="font-size:.9rem;padding:6px 16px;">🔻 ESTOQUE BAIXO</span>
+                {% elif d.status == 'alto' %}<span class="badge badge-info" style="font-size:.9rem;padding:6px 16px;">📈 ESTOQUE ALTO</span>
+                {% else %}<span class="badge badge-success" style="font-size:.9rem;padding:6px 16px;">✅ ESTOQUE OK</span>{% endif %}
+            </div>
+            {% if saldo %}
+            <div style="margin-top:1rem;font-size:.85rem;color:#888;">
+                Reservado: {{ saldo.quantidade_reservada }} · Disponível: {{ "%.2f"|format(saldo.quantidade_disponivel) }}
+            </div>
+            {% endif %}
+            <div style="margin-top:8px;font-size:.85rem;color:#888;">
+                Valor total em estoque: <strong>R$ {{ "%.2f"|format(d.valor_total) }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Histórico de Movimentações -->
+    <div class="card">
+        <h4 style="margin-top:0;">🔄 Histórico de Movimentações (últimas 50)</h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr><th>Data</th><th>Tipo</th><th>Quantidade</th><th>Produtor</th><th>Usuário</th><th>NF</th><th>Observação</th></tr>
+                </thead>
+                <tbody>
+                    {% for m in movimentacoes %}
+                    <tr>
+                        <td><small>{{ m.data_movimentacao.strftime('%d/%m/%Y %H:%M') }}</small></td>
+                        <td>
+                            {% if m.tipo == 'entrada' %}<span class="badge badge-success">ENTRADA</span>
+                            {% elif m.tipo == 'saida' %}<span class="badge badge-error">SAÍDA</span>
+                            {% elif m.tipo == 'devolucao' %}<span class="badge badge-info">DEVOLUÇÃO</span>
+                            {% else %}<span class="badge badge-warning">AJUSTE</span>{% endif %}
+                        </td>
+                        <td><strong>{{ "%.2f"|format(m.quantidade) }}</strong> {{ produto.unidade_medida.sigla }}</td>
+                        <td><small>{{ m.produtor.name if m.produtor else '—' }}</small></td>
+                        <td><small>{{ m.usuario.username if m.usuario else '—' }}</small></td>
+                        <td><small>{{ m.numero_nf or '—' }}</small></td>
+                        <td><small style="color:#888;">{{ m.observacao or '—' }}</small></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:#888;">Nenhuma movimentação registrada para este produto.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge{padding:3px 8px;border-radius:4px;font-size:.72rem;font-weight:700;text-transform:uppercase;}
+.badge-error{background:#fee2e2;color:#dc2626;}.badge-warning{background:#fef3c7;color:#d97706;}
+.badge-info{background:#e0f2fe;color:#0284c7;}.badge-success{background:#dcfce7;color:#16a34a;}
+.flex{display:flex;align-items:center;}
+</style>
+{% endblock %}

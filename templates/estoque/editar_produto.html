@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Editar Produto — {{ produto.nome }}{% endblock %}
+{% block content %}
+<div class="grid" style="max-width:860px;margin:0 auto;">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <h2 style="margin:0;">✏️ Editar Produto</h2>
+        <a href="{{ url_for('estoque.detalhes_produto', id=produto.id) }}" class="btn btn-secondary">← Voltar</a>
+    </div>
+
+    <div class="card">
+        <form method="POST" class="form">
+            <div class="form-row">
+                <div class="form-col-8">
+                    <label>Nome do Produto <span style="color:#dc2626;">*</span></label>
+                    <input type="text" name="nome" required value="{{ produto.nome }}">
+                </div>
+                <div class="form-col-4">
+                    <label>Código Interno</label>
+                    <input type="text" value="{{ produto.codigo_interno }}" disabled style="background:#f3f4f6;cursor:not-allowed;">
+                    <small style="color:#888;">O código não pode ser alterado.</small>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col-6">
+                    <label>Categoria <span style="color:#dc2626;">*</span></label>
+                    <select name="categoria_id" required>
+                        {% for c in categorias %}
+                        <option value="{{ c.id }}" {% if c.id == produto.categoria_id %}selected{% endif %}>{{ c.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-col-6">
+                    <label>Unidade de Medida <span style="color:#dc2626;">*</span></label>
+                    <select name="unidade_id" required>
+                        {% for u in unidades %}
+                        <option value="{{ u.id }}" {% if u.id == produto.unidade_medida_id %}selected{% endif %}>{{ u.nome }} ({{ u.sigla }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col-4">
+                    <label>Quantidade Mínima</label>
+                    <input type="number" step="0.01" min="0" name="quantidade_minima" value="{{ produto.quantidade_minima }}">
+                </div>
+                <div class="form-col-4">
+                    <label>Quantidade Máxima</label>
+                    <input type="number" step="0.01" min="0" name="quantidade_maxima" value="{{ produto.quantidade_maxima }}">
+                </div>
+                <div class="form-col-4">
+                    <label>Preço Unitário (R$)</label>
+                    <input type="number" step="0.01" min="0" name="preco_unitario" value="{{ produto.preco_unitario }}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col-12">
+                    <label>Fornecedor</label>
+                    <input type="text" name="fornecedor" value="{{ produto.fornecedor or '' }}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col-12">
+                    <label>Descrição</label>
+                    <textarea name="descricao" rows="3">{{ produto.descricao or '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="flex-between" style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border,#e5e7eb);">
+                <a href="{{ url_for('estoque.listar_produtos') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">💾 Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+.form-row{display:flex;gap:15px;margin-bottom:16px;flex-wrap:wrap;}
+.form-col-4{flex:0 0 calc(33.33% - 10px);min-width:160px;}
+.form-col-6{flex:0 0 calc(50% - 8px);min-width:200px;}
+.form-col-8{flex:0 0 calc(66.66% - 5px);min-width:250px;}
+.form-col-12{flex:1;}
+label{display:block;margin-bottom:5px;font-weight:500;font-size:.9rem;}
+input,select,textarea{width:100%;padding:10px;border-radius:6px;border:1px solid var(--border,#d1d5db);background:var(--bg-card,#fff);color:var(--text,#111);box-sizing:border-box;}
+</style>
+{% endblock %}

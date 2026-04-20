@@ -2,8 +2,12 @@
 {% block content %}
 <div class="grid">
     <div class="flex-between">
-        <h2>📦 Gestão de Estoque</h2>
-        <a href="{{ url_for('estoque.novo') }}" class="btn btn-primary">+ Novo Produto</a>
+        <h2>📦 Gestão de Estoque Profissional</h2>
+        <div class="flex" style="gap: 10px;">
+            <a href="{{ url_for('estoque.categorias') }}" class="btn btn-secondary">Categorias</a>
+            <a href="{{ url_for('estoque.unidades') }}" class="btn btn-secondary">Unidades</a>
+            <a href="{{ url_for('estoque.novo') }}" class="btn btn-primary">+ Novo Produto</a>
+        </div>
     </div>
 
     <div class="card">
@@ -11,22 +15,44 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>Cód.</th>
                         <th>Produto</th>
                         <th>Categoria</th>
                         <th>Saldo Atual</th>
-                        <th>Unidade</th>
+                        <th>Status</th>
+                        <th>Valor Total</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for p in produtos %}
+                    {% set dict = p.to_dict() %}
                     <tr>
-                        <td><strong>{{ p.nome }}</strong></td>
-                        <td>{{ p.categoria }}</td>
-                        <td>{{ p.quantidade_atual }}</td>
-                        <td>{{ p.unidade_medida }}</td>
+                        <td><small>{{ p.codigo_interno }}</small></td>
                         <td>
-                            <a href="{{ url_for('estoque.movimentar', id=p.id) }}" class="btn btn-secondary btn-sm">Movimentar</a>
+                            <strong>{{ p.nome }}</strong><br>
+                            <small class="text-muted">{{ p.unidade_medida.sigla }}</small>
+                        </td>
+                        <td>{{ p.categoria.nome }}</td>
+                        <td style="font-weight: 600;">
+                            {{ "%.2f"|format(dict.saldo_atual) }} {{ p.unidade_medida.sigla }}
+                        </td>
+                        <td>
+                            {% if dict.status == 'crítico' %}
+                                <span class="badge badge-error">CRÍTICO</span>
+                            {% elif dict.status == 'baixo' %}
+                                <span class="badge badge-warning">BAIXO</span>
+                            {% elif dict.status == 'alto' %}
+                                <span class="badge badge-info">ALTO</span>
+                            {% else %}
+                                <span class="badge badge-success">OK</span>
+                            {% endif %}
+                        </td>
+                        <td>R$ {{ "%.2f"|format(dict.valor_total) }}</td>
+                        <td>
+                            <div class="flex" style="gap: 5px;">
+                                <a href="{{ url_for('estoque.movimentar', id=p.id) }}" class="btn btn-secondary btn-sm">Movimentar</a>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -35,4 +61,20 @@
         </div>
     </div>
 </div>
+
+<style>
+    .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .badge-error { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+    .badge-warning { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+    .badge-info { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+    .badge-success { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+    .text-muted { color: #6b7280; font-size: 0.85rem; }
+    .flex { display: flex; align-items: center; }
+</style>
 {% endblock %}

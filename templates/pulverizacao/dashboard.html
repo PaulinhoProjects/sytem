@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Dashboard de Pulverização{% endblock %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <div>
+            <h2 style="margin:0;">💊 Controle de Pulverização</h2>
+            <p style="margin:4px 0 0;color:#888;font-size:.9rem;">Monitoramento de pragas e aplicações</p>
+        </div>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('pulverizacao.registrar_ocorrencia') }}" class="btn btn-secondary">+ Ocorrência</a>
+            <a href="{{ url_for('pulverizacao.criar_aplicacao') }}" class="btn btn-primary">+ Nova Aplicação</a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem;">
+        <div class="card" style="text-align:center;border-left:4px solid #dc2626;">
+            <div style="font-size:2.5rem;font-weight:800;color:#dc2626;">{{ ocorrencias_criticas }}</div>
+            <div style="color:#888;font-size:.85rem;margin-top:4px;">Ocorrências Críticas</div>
+        </div>
+        <div class="card" style="text-align:center;border-left:4px solid #16a34a;">
+            <div style="font-size:2.5rem;font-weight:800;color:#16a34a;">{{ aplicacoes_mes }}</div>
+            <div style="color:#888;font-size:.85rem;margin-top:4px;">Aplicações este Mês</div>
+        </div>
+        <div class="card" style="text-align:center;border-left:4px solid #d97706;">
+            <div style="font-size:2.5rem;font-weight:800;color:#d97706;">{{ cronogramas_pendentes }}</div>
+            <div style="color:#888;font-size:.85rem;margin-top:4px;">Cronogramas Pendentes</div>
+        </div>
+    </div>
+
+    <!-- Aplicações Recentes -->
+    <div class="card">
+        <div class="flex-between" style="margin-bottom:1rem;">
+            <h3 style="margin:0;">📋 Últimas Aplicações</h3>
+            <a href="{{ url_for('pulverizacao.listar_cronogramas') }}" style="font-size:.85rem;color:var(--primary,#4f8a3a);">Ver cronogramas →</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Data</th><th>Lavoura</th><th>Produto</th><th>Área (ha)</th><th>Eficácia</th></tr></thead>
+                <tbody>
+                    {% for a in aplicacoes_recentes %}
+                    <tr>
+                        <td>{{ a.data_aplicacao.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ a.lavoura.nome if a.lavoura else '—' }}</td>
+                        <td>{{ a.produto.nome if a.produto else '—' }}</td>
+                        <td>{{ a.area_aplicada }}</td>
+                        <td>{{ a.eficacia or '—' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" style="text-align:center;color:#888;padding:1.5rem;">Nenhuma aplicação registrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Links rápidos -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:1.5rem;">
+        <a href="{{ url_for('pulverizacao.listar_cronogramas') }}" class="btn btn-secondary">📅 Cronogramas</a>
+        <a href="{{ url_for('pulverizacao.listar_ocorrencias') }}" class="btn btn-secondary">🐛 Ocorrências</a>
+        <a href="{{ url_for('pulverizacao.listar_pragas') }}" class="btn btn-secondary">📚 Pragas</a>
+        <a href="{{ url_for('pulverizacao.listar_produtos_pulverizacao') }}" class="btn btn-secondary">🧪 Produtos</a>
+    </div>
+</div>
+<style>.flex{display:flex;align-items:center;}</style>
+{% endblock %}

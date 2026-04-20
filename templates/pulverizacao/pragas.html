@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Pragas Cadastradas{% endblock %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <h2 style="margin:0;">🐛 Pragas e Doenças</h2>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('pulverizacao.dashboard_pulverizacao') }}" class="btn btn-secondary">← Dashboard</a>
+            <a href="{{ url_for('pulverizacao.criar_praga') }}" class="btn btn-primary">+ Nova Praga</a>
+        </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+        <a href="{{ url_for('pulverizacao.listar_pragas') }}" class="btn btn-secondary btn-sm {% if not tipo_selecionado %}btn-active{% endif %}">Todas</a>
+        {% for t in tipos %}<a href="{{ url_for('pulverizacao.listar_pragas', tipo=t) }}" class="btn btn-secondary btn-sm {% if tipo_selecionado==t %}btn-active{% endif %}">{{ t|capitalize }}</a>{% endfor %}
+    </div>
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Nome</th><th>Nome Científico</th><th>Tipo</th><th>Dano Potencial</th></tr></thead>
+                <tbody>
+                    {% for p in pragas.items %}
+                    <tr>
+                        <td><strong>{{ p.nome }}</strong></td>
+                        <td><em style="color:#888;">{{ p.nome_cientifico or '—' }}</em></td>
+                        <td><span class="badge badge-warning">{{ p.tipo|upper }}</span></td>
+                        <td><small>{{ (p.dano_potencial or '')[:80] }}{% if p.dano_potencial and p.dano_potencial|length > 80 %}…{% endif %}</small></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" style="text-align:center;color:#888;padding:2rem;">Nenhuma praga cadastrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<style>.badge{padding:3px 8px;border-radius:4px;font-size:.72rem;font-weight:700;text-transform:uppercase;}.badge-warning{background:#fef3c7;color:#d97706;}.flex{display:flex;align-items:center;}.btn-sm{padding:4px 10px;font-size:.8rem;}.btn-active{background:var(--primary,#4f8a3a);color:#fff;}</style>
+{% endblock %}

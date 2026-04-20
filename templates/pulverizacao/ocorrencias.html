@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Ocorrências de Pragas{% endblock %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <h2 style="margin:0;">🔍 Ocorrências de Pragas</h2>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('pulverizacao.dashboard_pulverizacao') }}" class="btn btn-secondary">← Dashboard</a>
+            <a href="{{ url_for('pulverizacao.registrar_ocorrencia') }}" class="btn btn-primary">+ Registrar</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Data</th><th>Lavoura</th><th>Praga</th><th>Severidade</th><th>Infestação</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for o in ocorrencias.items %}
+                    <tr>
+                        <td>{{ o.data_deteccao.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ o.lavoura.nome if o.lavoura else '—' }}</td>
+                        <td><strong>{{ o.praga.nome if o.praga else '—' }}</strong></td>
+                        <td>
+                            {% if o.severidade == 'critica' %}<span class="badge badge-error">CRÍTICA</span>
+                            {% elif o.severidade == 'alta' %}<span class="badge badge-warning">ALTA</span>
+                            {% elif o.severidade == 'media' %}<span class="badge badge-info">MÉDIA</span>
+                            {% else %}<span class="badge badge-success">BAIXA</span>{% endif %}
+                        </td>
+                        <td>{{ o.percentual_infestacao }}%</td>
+                        <td>{% if o.resolvida %}<span style="color:#16a34a;">✅ Resolvida</span>{% else %}<span style="color:#dc2626;">⏳ Pendente</span>{% endif %}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">Nenhuma ocorrência registrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<style>.badge{padding:3px 8px;border-radius:4px;font-size:.72rem;font-weight:700;text-transform:uppercase;}.badge-error{background:#fee2e2;color:#dc2626;}.badge-warning{background:#fef3c7;color:#d97706;}.badge-info{background:#e0f2fe;color:#0284c7;}.badge-success{background:#dcfce7;color:#16a34a;}.flex{display:flex;align-items:center;}</style>
+{% endblock %}

@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 import numpy as np
-from models_alertas import Alerta, PredictaoProducao, ScoreLavoura
+from models.alertas import Alerta, PredictaoProducao, ScoreLavoura
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -143,6 +143,7 @@ class MLAlertas:
     def processar_alertas_produtor(self, produtor_id):
         """Macro-job para reprocessar ML Metrics para todo o produtor"""
         from models import Lavoura
+        from models.alertas import ScoreLavoura
         
         lavouras = self.db.session.query(Lavoura).filter(
             Lavoura.produtor_id == produtor_id

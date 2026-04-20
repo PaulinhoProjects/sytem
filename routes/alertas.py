@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, abort, send_file, flash, redirect, url_for
 from flask_login import login_required, current_user
 from models import db, Produtor
-from models_alertas import Alerta
+from models.alertas import Alerta
 from ml_alertas import MLAlertas
 from export_pdf import RelatorioGerador
 from datetime import datetime, timedelta

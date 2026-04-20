@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Produtos em Estoque{% endblock %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <div>
+            <h2 style="margin:0;">🗂️ Produtos em Estoque</h2>
+            <p style="margin:4px 0 0;color:#888;font-size:0.9rem;">Total: {{ produtos.total }} produto(s)</p>
+        </div>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('estoque.dashboard_estoque') }}" class="btn btn-secondary">← Dashboard</a>
+            <a href="{{ url_for('estoque.criar_produto') }}" class="btn btn-primary">+ Novo Produto</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Código</th><th>Produto</th><th>Categoria</th>
+                        <th>Saldo Atual</th><th>Mín/Máx</th><th>Status</th>
+                        <th>Valor Unitário</th><th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in produtos.items %}
+                    {% set d = p.to_dict() %}
+                    <tr>
+                        <td><code>{{ p.codigo_interno }}</code></td>
+                        <td>
+                            <strong>{{ p.nome }}</strong>
+                            {% if p.descricao %}<br><small style="color:#888;">{{ p.descricao[:60] }}{% if p.descricao|length > 60 %}…{% endif %}</small>{% endif %}
+                        </td>
+                        <td>{{ p.categoria.nome }}</td>
+                        <td><strong>{{ "%.2f"|format(d.saldo_atual) }}</strong> <small>{{ p.unidade_medida.sigla }}</small></td>
+                        <td><small>{{ p.quantidade_minima }} / {{ p.quantidade_maxima }}</small></td>
+                        <td>
+                            {% if d.status == 'crítico' %}<span class="badge badge-error">CRÍTICO</span>
+                            {% elif d.status == 'baixo' %}<span class="badge badge-warning">BAIXO</span>
+                            {% elif d.status == 'alto' %}<span class="badge badge-info">ALTO</span>
+                            {% else %}<span class="badge badge-success">OK</span>{% endif %}
+                        </td>
+                        <td>R$ {{ "%.2f"|format(p.preco_unitario) }}</td>
+                        <td>
+                            <div class="flex" style="gap:4px;">
+                                <a href="{{ url_for('estoque.detalhes_produto', id=p.id) }}" class="btn btn-secondary btn-sm">Detalhes</a>
+                                <a href="{{ url_for('estoque.editar_produto', id=p.id) }}" class="btn btn-secondary btn-sm">Editar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="8" style="text-align:center;padding:2rem;color:#888;">Nenhum produto cadastrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginação -->
+        {% if produtos.pages > 1 %}
+        <div class="flex" style="justify-content:center;gap:8px;margin-top:1rem;">
+            {% if produtos.has_prev %}
+                <a href="{{ url_for('estoque.listar_produtos', page=produtos.prev_num) }}" class="btn btn-secondary btn-sm">← Anterior</a>
+            {% endif %}
+            <span style="padding:4px 12px;border-radius:6px;background:var(--primary,#4f8a3a);color:#fff;font-size:0.85rem;">
+                {{ produtos.page }} / {{ produtos.pages }}
+            </span>
+            {% if produtos.has_next %}
+                <a href="{{ url_for('estoque.listar_produtos', page=produtos.next_num) }}" class="btn btn-secondary btn-sm">Próxima →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.badge{padding:3px 8px;border-radius:4px;font-size:.72rem;font-weight:700;text-transform:uppercase;}
+.badge-error{background:#fee2e2;color:#dc2626;}.badge-warning{background:#fef3c7;color:#d97706;}
+.badge-info{background:#e0f2fe;color:#0284c7;}.badge-success{background:#dcfce7;color:#16a34a;}
+.flex{display:flex;align-items:center;}.btn-sm{padding:4px 10px;font-size:.8rem;}
+</style>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Dashboard de Estoque — Gestão Agro Café{% endblock %}
+{% block content %}
+
+<div class="grid">
+    <!-- Header -->
+    <div class="flex-between" style="margin-bottom: 1.5rem;">
+        <div>
+            <h2 style="margin: 0; font-size: 1.6rem;">📦 Controle de Estoque</h2>
+            <p style="margin: 4px 0 0; color: var(--text-muted, #888); font-size: 0.9rem;">Visão geral do inventário</p>
+        </div>
+        <div class="flex" style="gap: 10px;">
+            <a href="{{ url_for('estoque.criar_movimentacao') }}" class="btn btn-secondary">+ Movimentação</a>
+            <a href="{{ url_for('estoque.criar_produto') }}" class="btn btn-primary">+ Novo Produto</a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="card" style="text-align:center; border-left: 4px solid var(--primary, #4f8a3a);">
+            <div style="font-size: 2rem; font-weight: 700; color: var(--primary, #4f8a3a);">{{ total_produtos }}</div>
+            <div style="color: #888; font-size: 0.85rem; margin-top: 4px;">Produtos Ativos</div>
+        </div>
+        <div class="card" style="text-align:center; border-left: 4px solid #dc2626;">
+            <div style="font-size: 2rem; font-weight: 700; color: #dc2626;">{{ produtos_criticos }}</div>
+            <div style="color: #888; font-size: 0.85rem; margin-top: 4px;">Estoque Crítico</div>
+        </div>
+        <div class="card" style="text-align:center; border-left: 4px solid #d97706;">
+            <div style="font-size: 2rem; font-weight: 700; color: #d97706;">{{ produtos_baixos }}</div>
+            <div style="color: #888; font-size: 0.85rem; margin-top: 4px;">Estoque Baixo</div>
+        </div>
+        <div class="card" style="text-align:center; border-left: 4px solid #0284c7;">
+            <div style="font-size: 1.4rem; font-weight: 700; color: #0284c7;">R$ {{ "%.2f"|format(valor_total_estoque) }}</div>
+            <div style="color: #888; font-size: 0.85rem; margin-top: 4px;">Valor em Estoque</div>
+        </div>
+    </div>
+
+    <!-- Tabela de Produtos -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="flex-between" style="margin-bottom: 1rem;">
+            <h3 style="margin: 0;">🗂️ Produtos em Estoque</h3>
+            <a href="{{ url_for('estoque.listar_produtos') }}" style="font-size: 0.85rem; color: var(--primary, #4f8a3a);">Ver todos →</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Saldo</th>
+                        <th>Status</th>
+                        <th>Valor Total</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in produtos[:10] %}
+                    {% set d = p.to_dict() %}
+                    <tr>
+                        <td><code style="font-size:0.8rem;">{{ p.codigo_interno }}</code></td>
+                        <td>
+                            <strong>{{ p.nome }}</strong>
+                            {% if p.fornecedor %}<br><small style="color:#888;">{{ p.fornecedor }}</small>{% endif %}
+                        </td>
+                        <td>{{ p.categoria.nome }}</td>
+                        <td>{{ "%.2f"|format(d.saldo_atual) }} <small>{{ p.unidade_medida.sigla }}</small></td>
+                        <td>
+                            {% if d.status == 'crítico' %}
+                                <span class="badge badge-error">CRÍTICO</span>
+                            {% elif d.status == 'baixo' %}
+                                <span class="badge badge-warning">BAIXO</span>
+                            {% elif d.status == 'alto' %}
+                                <span class="badge badge-info">ALTO</span>
+                            {% else %}
+                                <span class="badge badge-success">OK</span>
+                            {% endif %}
+                        </td>
+                        <td>R$ {{ "%.2f"|format(d.valor_total) }}</td>
+                        <td>
+                            <div class="flex" style="gap:5px;">
+                                <a href="{{ url_for('estoque.detalhes_produto', id=p.id) }}" class="btn btn-secondary btn-sm" title="Detalhes">🔍</a>
+                                <a href="{{ url_for('estoque.criar_movimentacao') }}?produto_id={{ p.id }}" class="btn btn-primary btn-sm" title="Movimentar">⇄</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" style="text-align:center;color:#888;padding:2rem;">Nenhum produto cadastrado ainda. <a href="{{ url_for('estoque.criar_produto') }}">Cadastrar agora →</a></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Movimentações Recentes -->
+    <div class="card">
+        <div class="flex-between" style="margin-bottom: 1rem;">
+            <h3 style="margin: 0;">🔄 Últimas Movimentações</h3>
+            <a href="{{ url_for('estoque.listar_movimentacoes') }}" style="font-size: 0.85rem; color: var(--primary, #4f8a3a);">Ver todas →</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr><th>Data</th><th>Produto</th><th>Tipo</th><th>Quantidade</th><th>Usuário</th><th>NF</th></tr>
+                </thead>
+                <tbody>
+                    {% for m in movimentacoes_recentes %}
+                    <tr>
+                        <td><small>{{ m.data_movimentacao.strftime('%d/%m/%Y %H:%M') }}</small></td>
+                        <td>{{ m.produto.nome if m.produto else '—' }}</td>
+                        <td>
+                            {% if m.tipo == 'entrada' %}<span class="badge badge-success">ENTRADA</span>
+                            {% elif m.tipo == 'saida' %}<span class="badge badge-error">SAÍDA</span>
+                            {% elif m.tipo == 'devolucao' %}<span class="badge badge-info">DEVOLUÇÃO</span>
+                            {% else %}<span class="badge badge-warning">AJUSTE</span>{% endif %}
+                        </td>
+                        <td>{{ "%.2f"|format(m.quantidade) }}</td>
+                        <td>{{ m.usuario.username if m.usuario else '—' }}</td>
+                        <td><small>{{ m.numero_nf or '—' }}</small></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" style="text-align:center;color:#888;padding:1.5rem;">Nenhuma movimentação registrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Links rápidos para gestão -->
+<div style="display: flex; gap: 12px; margin-top: 1.5rem; flex-wrap: wrap;">
+    <a href="{{ url_for('estoque.listar_categorias') }}" class="btn btn-secondary">🏷️ Gerenciar Categorias</a>
+    <a href="{{ url_for('estoque.listar_unidades') }}" class="btn btn-secondary">📏 Gerenciar Unidades</a>
+    <a href="{{ url_for('estoque.listar_movimentacoes') }}" class="btn btn-secondary">📋 Histórico Completo</a>
+</div>
+
+<style>
+.badge { padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.badge-error  { background: #fee2e2; color: #dc2626; }
+.badge-warning{ background: #fef3c7; color: #d97706; }
+.badge-info   { background: #e0f2fe; color: #0284c7; }
+.badge-success{ background: #dcfce7; color: #16a34a; }
+.flex { display: flex; align-items: center; }
+.btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+</style>
+{% endblock %}

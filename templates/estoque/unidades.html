@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between">
+        <h2>📏 Unidades de Medida</h2>
+        <a href="{{ url_for('estoque.listar') }}" class="btn btn-secondary">Voltar ao Estoque</a>
+    </div>
+
+    <div class="row" style="display: flex; gap: 20px;">
+        <div class="card" style="flex: 1;">
+            <h3>Nova Unidade</h3>
+            <form method="POST" class="form">
+                <div style="margin-bottom: 15px;">
+                    <label>Nome (Ex: Quilograma)</label>
+                    <input type="text" name="nome" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Sigla (Ex: kg)</label>
+                    <input type="text" name="sigla" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Descrição</label>
+                    <textarea name="descricao" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Adicionar Unidade</button>
+            </form>
+        </div>
+
+        <div class="card" style="flex: 2;">
+            <h3>Unidades Configuradas</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Sigla</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in unidades %}
+                    <tr>
+                        <td><strong>{{ u.nome }}</strong></td>
+                        <td><code>{{ u.sigla }}</code></td>
+                        <td>{{ 'Ativa' if u.ativo else 'Inativa' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

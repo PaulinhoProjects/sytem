@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Produtos de Pulverização{% endblock %}
+{% block content %}
+<div class="grid">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <h2 style="margin:0;">🧪 Produtos de Pulverização</h2>
+        <div class="flex" style="gap:10px;">
+            <a href="{{ url_for('pulverizacao.dashboard_pulverizacao') }}" class="btn btn-secondary">← Dashboard</a>
+            <a href="{{ url_for('pulverizacao.criar_produto_pulverizacao') }}" class="btn btn-primary">+ Novo Produto</a>
+        </div>
+    </div>
+
+    <!-- Filtros por tipo -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;">
+        <a href="{{ url_for('pulverizacao.listar_produtos_pulverizacao') }}" class="btn btn-secondary btn-sm {% if not tipo_selecionado %}btn-active{% endif %}">Todos</a>
+        {% for tipo in tipos %}
+        <a href="{{ url_for('pulverizacao.listar_produtos_pulverizacao', tipo=tipo) }}" 
+           class="btn btn-secondary btn-sm {% if tipo_selecionado == tipo %}btn-active{% endif %}">{{ tipo|capitalize }}</a>
+        {% endfor %}
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Nome</th><th>Tipo</th><th>Ingrediente Ativo</th><th>Dose Recomendada</th><th>Carência (dias)</th><th>Ações</th></tr></thead>
+                <tbody>
+                    {% for p in produtos.items %}
+                    <tr>
+                        <td><strong>{{ p.nome }}</strong></td>
+                        <td><span class="badge badge-info">{{ p.tipo|upper }}</span></td>
+                        <td><small>{{ p.ingrediente_ativo or '—' }}</small></td>
+                        <td>{{ p.dose_recomendada or '—' }} {{ p.unidade_dose }}</td>
+                        <td>{{ p.periodo_carencia }} dias</td>
+                        <td><a href="{{ url_for('pulverizacao.editar_produto_pulverizacao', id=p.id) }}" class="btn btn-secondary btn-sm">Editar</a></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">Nenhum produto cadastrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if produtos.pages > 1 %}
+        <div class="flex" style="justify-content:center;gap:8px;margin-top:1rem;">
+            {% if produtos.has_prev %}<a href="{{ url_for('pulverizacao.listar_produtos_pulverizacao', page=produtos.prev_num) }}" class="btn btn-secondary btn-sm">← Ant.</a>{% endif %}
+            <span style="padding:4px 12px;border-radius:6px;background:var(--primary,#4f8a3a);color:#fff;font-size:.85rem;">{{ produtos.page }}/{{ produtos.pages }}</span>
+            {% if produtos.has_next %}<a href="{{ url_for('pulverizacao.listar_produtos_pulverizacao', page=produtos.next_num) }}" class="btn btn-secondary btn-sm">Próx. →</a>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+<style>.badge{padding:3px 8px;border-radius:4px;font-size:.72rem;font-weight:700;text-transform:uppercase;}.badge-info{background:#e0f2fe;color:#0284c7;}.flex{display:flex;align-items:center;}.btn-sm{padding:4px 10px;font-size:.8rem;}.btn-active{background:var(--primary,#4f8a3a);color:#fff;}</style>
+{% endblock %}

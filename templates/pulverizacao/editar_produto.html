@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Editar {{ produto.nome }}{% endblock %}
+{% block content %}
+<div class="grid" style="max-width:760px;margin:0 auto;">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <h2 style="margin:0;">✏️ Editar Produto</h2>
+        <a href="{{ url_for('pulverizacao.listar_produtos_pulverizacao') }}" class="btn btn-secondary">← Voltar</a>
+    </div>
+    <div class="card">
+        <form method="POST" class="form">
+            <div class="fr"><div class="fc8"><label>Nome *</label><input type="text" name="nome" required value="{{ produto.nome }}"></div>
+            <div class="fc4"><label>Tipo *</label><select name="tipo" required>{% for t in tipos %}<option value="{{ t }}" {% if produto.tipo == t %}selected{% endif %}>{{ t|capitalize }}</option>{% endfor %}</select></div></div>
+            <div class="fr"><div class="fc6"><label>Ingrediente Ativo</label><input type="text" name="ingrediente_ativo" value="{{ produto.ingrediente_ativo or '' }}"></div>
+            <div class="fc6"><label>Concentração</label><input type="text" name="concentracao" value="{{ produto.concentracao or '' }}"></div></div>
+            <div class="fr"><div class="fc4"><label>Dose Recomendada</label><input type="text" name="dose_recomendada" value="{{ produto.dose_recomendada or '' }}"></div>
+            <div class="fc4"><label>Unidade</label><select name="unidade_dose"><option value="ml" {% if produto.unidade_dose=='ml' %}selected{% endif %}>ml/ha</option><option value="L" {% if produto.unidade_dose=='L' %}selected{% endif %}>L/ha</option><option value="g" {% if produto.unidade_dose=='g' %}selected{% endif %}>g/ha</option><option value="kg" {% if produto.unidade_dose=='kg' %}selected{% endif %}>kg/ha</option></select></div>
+            <div class="fc4"><label>Carência (dias)</label><input type="number" min="0" name="periodo_carencia" value="{{ produto.periodo_carencia }}"></div></div>
+            <div class="fr"><div class="fc6"><label>Fabricante</label><input type="text" name="fabricante" value="{{ produto.fabricante or '' }}"></div>
+            <div class="fc6"><label>Registro MAPA</label><input type="text" name="registro_mapa" value="{{ produto.registro_mapa or '' }}"></div></div>
+            <div class="fr"><div class="fc12"><label>Descrição</label><textarea name="descricao" rows="3">{{ produto.descricao or '' }}</textarea></div></div>
+            <div class="flex-between" style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border,#e5e7eb);">
+                <a href="{{ url_for('pulverizacao.listar_produtos_pulverizacao') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">💾 Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>.fr{display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap;}.fc4{flex:0 0 calc(33.33% - 10px);min-width:140px;}.fc6{flex:0 0 calc(50% - 8px);min-width:180px;}.fc8{flex:0 0 calc(66.66% - 5px);min-width:220px;}.fc12{flex:1;}label{display:block;margin-bottom:5px;font-weight:500;font-size:.9rem;}input,select,textarea{width:100%;padding:10px;border-radius:6px;border:1px solid var(--border,#d1d5db);background:var(--bg-card,#fff);color:var(--text,#111);box-sizing:border-box;}</style>
+{% endblock %}

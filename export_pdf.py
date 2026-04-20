@@ -17,7 +17,7 @@ class RelatorioGerador:
 
     def gerar_relatorio_producao(self, periodo_inicio, periodo_fim, produtor_id=None, lavoura_id=None):
         """Gera relatório de produção em PDF com gráficos e tabelas formatadas"""
-        from models_alertas import PredictaoProducao
+        from models.alertas import PredictaoProducao
         
         query = self.db.session.query(PredictaoProducao).filter(
             PredictaoProducao.data_criacao.between(periodo_inicio, periodo_fim)
@@ -89,7 +89,7 @@ class RelatorioGerador:
 
     def gerar_relatorio_lavouras(self, periodo_inicio, periodo_fim, produtor_id=None):
         """Gera relatório de saúde das lavouras"""
-        from models_alertas import ScoreLavoura
+        from models.alertas import ScoreLavoura
         
         query = self.db.session.query(ScoreLavoura).filter(
             ScoreLavoura.data_calculo.between(periodo_inicio, periodo_fim)
@@ -132,7 +132,7 @@ class RelatorioGerador:
 
     def gerar_relatorio_agronomico(self, periodo_inicio, periodo_fim):
         """Gera relatório agronômico com alertas e recomendações"""
-        from models_alertas import Alerta
+        from models.alertas import Alerta
         
         alerts = self.db.session.query(Alerta).filter(
             Alerta.data_criacao.between(periodo_inicio, periodo_fim)

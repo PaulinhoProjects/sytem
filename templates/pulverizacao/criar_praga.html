@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Nova Praga{% endblock %}
+{% block content %}
+<div class="grid" style="max-width:700px;margin:0 auto;">
+    <div class="flex-between" style="margin-bottom:1.5rem;">
+        <h2 style="margin:0;">🐛 Nova Praga / Doença</h2>
+        <a href="{{ url_for('pulverizacao.listar_pragas') }}" class="btn btn-secondary">← Voltar</a>
+    </div>
+    <div class="card">
+        <form method="POST" class="form">
+            <div class="fr"><div class="fc8"><label>Nome Comum *</label><input type="text" name="nome" required placeholder="Ex: Bicho-mineiro do café"></div>
+            <div class="fc4"><label>Tipo *</label><select name="tipo" required><option value="">Selecione...</option>{% for t in tipos %}<option value="{{ t }}">{{ t|capitalize }}</option>{% endfor %}</select></div></div>
+            <div class="fr"><div class="fc12"><label>Nome Científico</label><input type="text" name="nome_cientifico" placeholder="Ex: Leucoptera coffeella"></div></div>
+            <div class="fr"><div class="fc12"><label>Descrição</label><textarea name="descricao" rows="2" placeholder="Descreva as características..."></textarea></div></div>
+            <div class="fr"><div class="fc12"><label>Danos Potenciais</label><textarea name="dano_potencial" rows="2" placeholder="Quais danos causa à lavoura..."></textarea></div></div>
+            <div class="fr"><div class="fc12"><label>Métodos de Controle</label><textarea name="metodos_controle" rows="2" placeholder="Como controlar e tratar..."></textarea></div></div>
+            <div class="flex-between" style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border,#e5e7eb);">
+                <a href="{{ url_for('pulverizacao.listar_pragas') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">💾 Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>.fr{display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap;}.fc4{flex:0 0 calc(33.33% - 10px);min-width:140px;}.fc8{flex:0 0 calc(66.66% - 5px);min-width:220px;}.fc12{flex:1;}label{display:block;margin-bottom:5px;font-weight:500;font-size:.9rem;}input,select,textarea{width:100%;padding:10px;border-radius:6px;border:1px solid var(--border,#d1d5db);background:var(--bg-card,#fff);color:var(--text,#111);box-sizing:border-box;}</style>
+{% endblock %}
